@@ -12,23 +12,28 @@ class Program{
     public static void main(String[] args) {
         ChessGame chessGame = new ChessGame(); 
         printBoard(chessGame);
-
-        chessGame.Move("14", "34"); // White Pawn from e2 to e4
+        chessGame.Move("14","34");
         printBoard(chessGame);
-        chessGame.Move("64", "54"); // Black Pawn from e7 to e5
+        printList(chessGame.GetExpectedMove("64"));
+        chessGame.Move("64","44");
         printBoard(chessGame);
-        chessGame.Move("06", "25"); // White Knight from g1 to f3
+        printList(chessGame.GetExpectedMove("03"));
+        chessGame.Move("03","47");
         printBoard(chessGame);
-        chessGame.Move("10", "22"); // Black Knight from b8 to c6
+        chessGame.Move("62","42");
         printBoard(chessGame);
-        chessGame.Move("05", "32"); // White Bishop from f1 to c4
+        chessGame.Move("47","44");
         printBoard(chessGame);
-
+        printList(chessGame.GetExpectedMove("42"));
     }
 
     private static void printList(List<String> list){
-        if(list.isEmpty() || list == null){
+        if(list == null){
             System.out.println("null");
+            return;
+        }
+        if(list.isEmpty()){
+            System.out.println("empty");
         }
         
         for (String str : list) {
@@ -38,37 +43,37 @@ class Program{
     }
     private static void printBoard(ChessGame chessGame){
         System.out.println();
+        System.out.print("  ");
+        for(int i = 0; i< 8 ; i++){
+            System.out.print(" "+i+"  ");
+        }
+        System.out.println();
         for(int i = 0; i< 8; i++){
+            System.out.print(i + " ");
             for(int j= 0; j<8; j++){
-                Piece piece = chessGame.board.get(i).get(j)  ;
+                Piece piece = ChessGame.board.get(i).get(j)  ;
                 if(piece != null){
-                    if(piece instanceof Rook){
-                        Rook r = (Rook) piece;
-                        System.out.print( "("+ r.getPieceEnum() + " " + r.getPlayerEnum() + r.getPosition() + ") ");
+                    if(piece instanceof Rook r){
+                        System.out.print( "R" +r.getPosition()+" ");
                     }
-                    else if(piece instanceof Bishop){
-                        Bishop r = (Bishop) piece;
-                        System.out.print( "("+ r.getPieceEnum() + " " + r.getPlayerEnum() + r.getPosition() + ") ");
+                    else if(piece instanceof Bishop r){
+                        System.out.print( "B" +r.getPosition()+" ");
                     }
-                    else if(piece instanceof Knight){
-                        Knight r = (Knight) piece;
-                        System.out.print( "("+ r.getPieceEnum() + " " + r.getPlayerEnum() + r.getPosition() + ") ");
+                    else if(piece instanceof Knight r){
+                        System.out.print("N" +r.getPosition()+" ");
                     }
-                    else if(piece instanceof King){
-                        King r = (King) piece;
-                        System.out.print( "("+ r.getPieceEnum() + " " + r.getPlayerEnum() + r.getPosition() + ") ");
+                    else if(piece instanceof King r){
+                        System.out.print("K" +r.getPosition()+" ");
                     }
-                    else if(piece instanceof Queen){
-                        Queen r = (Queen) piece;
-                        System.out.print( "("+ r.getPieceEnum() + " " + r.getPlayerEnum() + r.getPosition() + ") ");
+                    else if(piece instanceof Queen r){
+                        System.out.print( "Q" +r.getPosition()+" ");
                     }
-                    else if(piece instanceof Pawn){
-                        Pawn r = (Pawn) piece;
-                        System.out.print( "("+ r.getPieceEnum() + " " + r.getPlayerEnum() + r.getPosition() +  ") ");
+                    else if(piece instanceof Pawn r){
+                        System.out.print( "P" +r.getPosition()+" ");
                     }
                 }
                 else{
-                    System.out.print (  "xxxxxxxxxxxxx ");
+                    System.out.print (" -  ");
                 }
             }
             System.out.println();

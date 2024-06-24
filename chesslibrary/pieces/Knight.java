@@ -13,16 +13,13 @@ import enums.PlayerEnum;
 
 public class  Knight extends Piece{
 
-    final PieceEnum pieceEnum = PieceEnum.Knight;
-    PlayerEnum playerEnum;
-    boolean isKilled =false;
-    boolean canMove = true;
-    String position; 
+    String position;
 
     public Knight( PlayerEnum playerEnum,String position) {
-        this.playerEnum = playerEnum;
-        this.position = position; 
-    }
+        this.player = playerEnum;
+        this.position = position;
+        isKilled =false;
+        canMove = true; }
     
     public List<String> ExpectedMove(){
        List<String> moves = new ArrayList<>();
@@ -39,7 +36,7 @@ public class  Knight extends Piece{
                 if((pm.GetPieceAtPosition(newIdx+""+newJdx)==null))
                 moves.add(newIdx+""+newJdx); 
                 else{
-                    if((pm.GetPieceAtPosition(newIdx+""+newJdx).getPlayer()!=playerEnum)){
+                    if((pm.GetPieceAtPosition(newIdx+""+newJdx).getPlayer()!=player)){
                         moves.add(newIdx+""+newJdx);
                     }
                 }
@@ -48,18 +45,8 @@ public class  Knight extends Piece{
        return moves; 
     }
 
-    public PieceEnum getPieceEnum() {
-        return pieceEnum;
-    }
     public PlayerEnum getPlayerEnum() {
-        return playerEnum;
-    }
-    public void setPlayerEnum(PlayerEnum playerEnum) {
-        this.playerEnum = playerEnum;
-    } 
-
-    public boolean getIsKilled() {
-        return isKilled;
+        return player;
     }
     public boolean getCanMove() {
         return canMove;
@@ -67,32 +54,18 @@ public class  Knight extends Piece{
     public String getPosition() {
         return position;
     }
-    public void setKilled(boolean isKilled) {
-        this.isKilled = isKilled;
-    }
     public void setCanMove(boolean canMove) {
         this.canMove = canMove;
     }
     public void setPosition(String position) {
         this.position = position;
     }
-
-    @Override
     public PlayerEnum getPlayer() {
-        return playerEnum;
+        return player;
     }
-
-    @Override
-    public PieceEnum getPiece() {
-        return pieceEnum;
-    }
-
-    @Override
     public boolean isKilled() {
         return isKilled;
     }
-
-    @Override
     public void setIsKilled(boolean isKilled) {
        this.isKilled = isKilled;
     }

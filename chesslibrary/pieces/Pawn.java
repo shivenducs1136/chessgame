@@ -11,17 +11,14 @@ import enums.PieceEnum;
 import enums.PlayerEnum;
 
 public class Pawn extends Piece{
-
-    final PieceEnum pieceEnum = PieceEnum.Pawn;
-    public PlayerEnum playerEnum;
-    public boolean isKilled =false;
-    public boolean canMove = true;
-    public boolean isFirstMove = true; 
+    public boolean isFirstMove = true;
     public String position; 
 
     public Pawn( PlayerEnum playerEnum,String position) {
-        this.playerEnum = playerEnum;
-        this.position = position; 
+        this.player = playerEnum;
+        this.position = position;
+         isKilled =false;
+         canMove = true;
     }
     
     public List<String> ExpectedMove(){
@@ -29,7 +26,7 @@ public class Pawn extends Piece{
        PieceManager pm = new PieceManager(); 
        int i = pm.GetIindex(position);
        int j = pm.GetJindex(position);
-       if(playerEnum == PlayerEnum.White){
+       if(player == PlayerEnum.White){
         int idx = i; 
         if(isFirstMove){
 
@@ -60,12 +57,12 @@ public class Pawn extends Piece{
             Piece piece1 = pm.GetPieceAtPosition(di+""+dj1); 
             Piece piece2 = pm.GetPieceAtPosition(di+""+dj2); 
             if(dj1>=0 && dj1<8){
-                if( piece1 != null && piece1.getPlayer()!=playerEnum){
+                if( piece1 != null && piece1.getPlayer()!=player){
                     moves.add(di+""+dj1);
                 }
             }
             if(dj2>=0 && dj2<8){
-                if( piece2 != null && piece2.getPlayer()!=playerEnum){
+                if( piece2 != null && piece2.getPlayer()!=player){
                     moves.add(di+""+dj2);
                 }
             }
@@ -85,7 +82,6 @@ public class Pawn extends Piece{
                 }
                 count ++; 
             }
-            isFirstMove= false;
         }
         else{
             idx--; 
@@ -101,39 +97,23 @@ public class Pawn extends Piece{
         Piece piece1 = pm.GetPieceAtPosition(di+""+dj1); 
         Piece piece2 = pm.GetPieceAtPosition(di+""+dj2); 
         if(dj1>=0 && dj1<8){
-            if( piece1 != null && piece1.getPlayer()!=playerEnum){
+            if( piece1 != null && piece1.getPlayer()!=player){
                 moves.add(di+""+dj1);
             }
         }
         if(dj2>=0 && dj2<8){
-            if( piece2 != null && piece2.getPlayer()!=playerEnum){
+            if( piece2 != null && piece2.getPlayer()!=player){
                 moves.add(di+""+dj2);
             }
         }
         return moves;
        }
     }
-    public PieceEnum getPieceEnum() {
-        return pieceEnum;
-    }
-    public PlayerEnum getPlayerEnum() {
-        return playerEnum;
-    }
-    public void setPlayerEnum(PlayerEnum playerEnum) {
-        this.playerEnum = playerEnum;
-    } 
-
-    public boolean getIsKilled() {
-        return isKilled;
-    }
     public boolean getCanMove() {
         return canMove;
     }
     public String getPosition() {
         return position;
-    }
-    public void setKilled(boolean isKilled) {
-        this.isKilled = isKilled;
     }
     public void setCanMove(boolean canMove) {
         this.canMove = canMove;
@@ -146,19 +126,12 @@ public class Pawn extends Piece{
     }
     @Override
     public PlayerEnum getPlayer() {
-        return playerEnum;
+        return player;
     }
-
-    @Override
-    public PieceEnum getPiece() {
-        return pieceEnum;
-    }
-
     @Override
     public boolean isKilled() {
         return isKilled;
     }
-
     @Override
     public void setIsKilled(boolean isKilled) {
        this.isKilled = isKilled;

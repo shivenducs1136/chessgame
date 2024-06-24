@@ -1,13 +1,15 @@
 package chess;
+
 import abstracts.Piece;
 import enums.PieceEnum;
 import enums.PlayerEnum;
 import pieces.King;
 
 import java.util.*;
+
 public class PieceManager {
-    private static List<Piece> whitePieces = new ArrayList<>();
-    private static List<Piece> blackPieces = new ArrayList<>();
+    private static final List<Piece> whitePieces = new ArrayList<>();
+    private static final List<Piece> blackPieces = new ArrayList<>();
     public Piece GetPieceAtPosition(String position){
         int i = position.charAt(0) - '0'; 
         int j = position.charAt(1) - '0'; 
@@ -16,26 +18,18 @@ public class PieceManager {
         return ChessGame.board.get(i).get(j); 
     }
     public int GetIindex(String position){
-        int i = position.charAt(0) - '0'; 
-        return i; 
+        return position.charAt(0) - '0';
     }
     public int GetJindex(String position){
-        int j =  position.charAt(1) - '0'; 
-        return j; 
+        return position.charAt(1) - '0';
     }
     public boolean IsPositionEmptyInBoard(int i,int j){
-        if(ChessGame.board.get(i).get(j) == null){
-            return true;
-        }
-        return false;
+        return ChessGame.board.get(i).get(j) == null;
     }
     public boolean IsIndexSafe(int i, int j){
-        if(i>=0 && i<8 && j>=0 && j<8){
-            return true; 
-        }
-        return false;
+        return i >= 0 && i < 8 && j >= 0 && j < 8;
     }
-     public void SeggregatePiece(Piece pc){
+    public void SeggregatePiece(Piece pc){
         if(pc.getPlayer() == PlayerEnum.White){
             whitePieces.add(pc);
         }
@@ -48,17 +42,6 @@ public class PieceManager {
            SeggregatePiece(pc);
         }
     }
-
-    public List<Piece> GetOppositePlayerPieces(PlayerEnum playerColor){
-        if(playerColor == PlayerEnum.White){
-            return blackPieces;
-        }
-        else if(playerColor == PlayerEnum.Black){
-            return whitePieces;
-        }
-        return null;
-    }
-
     public List<Piece> GetPlayerPieces(PlayerEnum playerColor){
         if(playerColor == PlayerEnum.White){
             return whitePieces;
@@ -68,21 +51,10 @@ public class PieceManager {
         }
         return null;
     }
-
-    public String GetCurrentPlayerKingPosition(PlayerEnum playerChance) {
-        List<Piece> pieces = GetPlayerPieces(playerChance);
-        for(Piece piece:pieces){
-            if(piece.getPiece() == PieceEnum.King){
-                return piece.getPosition();
-            }
-        }
-        return null;
-    }
-
-    public void SetCanMoveToFalse(PlayerEnum playerColor) {
+    public void RestrictPlayersOnCheck(PlayerEnum playerColor) {
         List<Piece> pieces = GetPlayerPieces(playerColor);
         for(Piece piece:pieces){
-            if(piece.getPiece()!=PieceEnum.King){
+            if(!(piece instanceof King)){
                 piece.setCanMove(false);
             }
         }
@@ -104,5 +76,11 @@ public class PieceManager {
             }
         }
         return null;
+    }
+    public PlayerEnum GetOppositePlayerColor(PlayerEnum playerEnum){
+        if(playerEnum == PlayerEnum.Black){
+            return PlayerEnum.White;
+        }
+        return PlayerEnum.Black;
     }
 }

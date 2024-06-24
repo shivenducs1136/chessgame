@@ -10,16 +10,11 @@ import enums.PieceEnum;
 import enums.PlayerEnum;
 
 public class King extends Piece{
-
-    final PieceEnum pieceEnum = PieceEnum.King;
-    PlayerEnum playerEnum;
-    boolean isKilled =false;
-    boolean canMove = true;
-    String position; 
-
     public King( PlayerEnum playerEnum,String position) {
-        this.playerEnum = playerEnum;
-        this.position = position; 
+        player = playerEnum;
+        this.position = position;
+        isKilled =false;
+        canMove = true;
     }
     
     public List<String> ExpectedMove(){
@@ -48,7 +43,7 @@ public class King extends Piece{
                 if((pm.GetPieceAtPosition(newIdx+""+newJdx)==null))
                     moves.add(newIdx+""+newJdx);
                 else{
-                    if((pm.GetPieceAtPosition(newIdx+""+newJdx).getPlayer()!=playerEnum)){
+                    if((pm.GetPieceAtPosition(newIdx+""+newJdx).getPlayer()!=player)){
                         moves.add(newIdx+""+newJdx);
                     }
                 }
@@ -59,7 +54,7 @@ public class King extends Piece{
 
     private List<String> GetOppositePlayerPieceMovesThatCanHarmKing(PieceManager pm) {
         List<String> moves = new ArrayList<>();
-        List<Piece> oppositeColorPieces = pm.GetOppositePlayerPieces(playerEnum);
+        List<Piece> oppositeColorPieces = pm.GetPlayerPieces(pm.GetOppositePlayerColor(player));
 
         for (Piece piece : oppositeColorPieces) {
             List<String> pcMoves;
@@ -80,50 +75,24 @@ public class King extends Piece{
     }
 
 
-    public PieceEnum getPieceEnum() {
-        return pieceEnum;
-    }
-    public PlayerEnum getPlayerEnum() {
-        return playerEnum;
-    }
-    public void setPlayerEnum(PlayerEnum playerEnum) {
-        this.playerEnum = playerEnum;
-    } 
-
-    public boolean getIsKilled() {
-        return isKilled;
-    }
     public boolean getCanMove() {
         return canMove;
     }
     public String getPosition() {
         return position;
     }
-    public void setKilled(boolean isKilled) {
-        this.isKilled = isKilled;
+    public void setPosition(String position) {
+        this.position = position;
     }
     public void setCanMove(boolean canMove) {
         this.canMove = canMove;
     }
-    public void setPosition(String position) {
-        this.position = position;
-    }
-    @Override
     public PlayerEnum getPlayer() {
-        return playerEnum;
+        return player;
     }
-
-    @Override
-    public PieceEnum getPiece() {
-        return pieceEnum;
-    }
-
-    @Override
     public boolean isKilled() {
         return isKilled;
     }
-
-    @Override
     public void setIsKilled(boolean isKilled) {
        this.isKilled = isKilled;
     }
