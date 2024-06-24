@@ -10,21 +10,26 @@ import pieces.Rook;
 import java.util.*;;
 class Program{
     public static void main(String[] args) {
-        ChessGame chessGame = new ChessGame(); 
-        printBoard(chessGame);
-        chessGame.Move("14","34");
-        printBoard(chessGame);
-        printList(chessGame.GetExpectedMove("64"));
-        chessGame.Move("64","44");
-        printBoard(chessGame);
-        printList(chessGame.GetExpectedMove("03"));
-        chessGame.Move("03","47");
-        printBoard(chessGame);
-        chessGame.Move("62","42");
-        printBoard(chessGame);
-        chessGame.Move("47","44");
-        printBoard(chessGame);
-        printList(chessGame.GetExpectedMove("42"));
+        ChessGame chessGame = new ChessGame();
+        Scanner sc = new Scanner(System.in);
+        String idx;
+        do{
+            printBoard(chessGame);
+            String position;
+            do{
+                System.out.println("Enter position of piece to move without any space -");
+                position   = sc.nextLine();
+                System.out.println("Expected Moves of piece at: "+position);
+                printList(chessGame.GetExpectedMove(position));
+            }while(chessGame.GetExpectedMove(position)==null);
+
+            System.out.println("Enter new position where you want to move piece");
+            String newPosition = sc.nextLine();
+            chessGame.Move(position,newPosition);
+            printBoard(chessGame);
+            System.out.println("To continue press any key or press 0 to exit.");
+            idx = sc.nextLine();
+        }while(!Objects.equals(idx, "0"));
     }
 
     private static void printList(List<String> list){
@@ -45,7 +50,7 @@ class Program{
         System.out.println();
         System.out.print("  ");
         for(int i = 0; i< 8 ; i++){
-            System.out.print(" "+i+"  ");
+            System.out.print("  "+i+"       ");
         }
         System.out.println();
         for(int i = 0; i< 8; i++){
@@ -54,29 +59,37 @@ class Program{
                 Piece piece = ChessGame.board.get(i).get(j)  ;
                 if(piece != null){
                     if(piece instanceof Rook r){
-                        System.out.print( "R" +r.getPosition()+" ");
+                        System.out.print( GetWorB(piece.getPlayer()) +"Rook" +r.getPosition()+"   ");
                     }
                     else if(piece instanceof Bishop r){
-                        System.out.print( "B" +r.getPosition()+" ");
+                        System.out.print(  GetWorB(piece.getPlayer()) +"Bishop" +r.getPosition()+" ");
                     }
                     else if(piece instanceof Knight r){
-                        System.out.print("N" +r.getPosition()+" ");
+                        System.out.print( GetWorB(piece.getPlayer()) +"Knight" +r.getPosition()+" ");
                     }
                     else if(piece instanceof King r){
-                        System.out.print("K" +r.getPosition()+" ");
+                        System.out.print( GetWorB(piece.getPlayer()) +"King" +r.getPosition()+"   ");
                     }
                     else if(piece instanceof Queen r){
-                        System.out.print( "Q" +r.getPosition()+" ");
+                        System.out.print(  GetWorB(piece.getPlayer()) +"Queen" +r.getPosition()+"  ");
                     }
                     else if(piece instanceof Pawn r){
-                        System.out.print( "P" +r.getPosition()+" ");
+                        System.out.print(  GetWorB(piece.getPlayer()) +"Pawn" +r.getPosition()+"   ");
                     }
                 }
                 else{
-                    System.out.print (" -  ");
+                    System.out.print ("    -     ");
                 }
             }
             System.out.println();
         }
+        System.out.println("Current Chance    - " + chessGame.getPlayer());
+        System.out.println("Current GameState - " + chessGame.currentGameState);
+    }
+    private static String GetWorB(PlayerEnum playerEnum){
+        if(playerEnum == PlayerEnum.White){
+            return "W";
+        }
+        return "B";
     }
 }

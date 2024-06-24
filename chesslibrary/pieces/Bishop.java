@@ -18,7 +18,6 @@ public class Bishop extends Piece{
         player = playerEnum;
         this.position = position;
     }
-
     public List<String> ExpectedMove(){
         List<String> moves =  new ArrayList<String>();
         PieceManager pm = new PieceManager();
