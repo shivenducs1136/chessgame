@@ -19,71 +19,18 @@ public class Rook extends Piece{
         isKilled =false;
         canMove = true; }
     
-    public List<String> ExpectedMove(){
-        List<String> moves =  new ArrayList<String>(); 
-        PieceManager pm = new PieceManager(); 
-        int idx = pm.GetIindex(position); 
-        int jdx = pm.GetJindex(position);
-        int i = idx; 
-        int j = jdx; 
-
-        // keeping j constant and  decreasing i
-        i--; 
-        while(
-            (i>=0 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (i>=0 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                i--; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-       
-        // keeping j constant and  increasing i
-        i++; 
-        while(
-            (i<8 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (i<8 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                i++; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-         
-        // keeping i constant and  decreasing j
-        j--; 
-        while(
-            (j>=0 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (j>=0 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                j--; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-
-        // keeping i constant and  increasing j
-        j++; 
-        while(
-            ( j<8 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            ( j<8 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                j++; 
-             }
+    public List<List<String>> ExpectedMove(){
+        PieceManager pm = new PieceManager();
+        List<List<String>> moves = new ArrayList<>();
+        int[] iIndexes = new int[]{-1,1,0,0};
+        int[] jIndexes = new int[]{0,0,-1,1};
+        // keeping decreasing i and j constant   -> -1,0
+        // keeping increasing i and j constant   -> 1,0
+        // keeping i constant and  decreasing j  -> 0,-1
+        // keeping i constant and  increasing j  -> 0,1
+        for(int x = 0; x<4;x++){
+            moves.add(GetValidMovesInDirection(pm,iIndexes[x],jIndexes[x]));
+        }
         return moves;
     }
     public boolean getCanMove() {

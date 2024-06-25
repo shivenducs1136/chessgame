@@ -17,13 +17,16 @@ public class King extends Piece{
         canMove = true;
     }
     
-    public List<String> ExpectedMove(){
+    public List<List<String>> ExpectedMove(){
        PieceManager pm = new PieceManager();
-        List<String> moves = new ArrayList<>(GetAllValidMoves(pm));
+        List<List<String>> moves = new ArrayList<>();
+        moves.add(GetAllValidMoves(pm));
         List<String> oppositePlayerPieceMovesThatCanCheckKing = GetOppositePlayerPieceMovesThatCanHarmKing(pm);
         for (String mv : oppositePlayerPieceMovesThatCanCheckKing) {
-            if(moves.contains(mv)){
-                moves.remove(mv);
+            for(List<String> mvList:moves){
+                if(mvList.contains(mv)){
+                    mvList.remove(mv);
+                }
             }
         }
        return moves; 
@@ -63,7 +66,11 @@ public class King extends Piece{
 
             }
             else{
-                pcMoves = piece.ExpectedMove();
+                var expectedMoves = piece.ExpectedMove();
+                pcMoves = new ArrayList<>();
+                for(List<String> exMoves:expectedMoves){
+                    pcMoves.addAll(exMoves);
+                }
             }
             for (String mv : pcMoves) {
                 if(!moves.contains(mv)){

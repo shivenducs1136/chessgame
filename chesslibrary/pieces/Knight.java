@@ -21,26 +21,28 @@ public class  Knight extends Piece{
         isKilled =false;
         canMove = true; }
     
-    public List<String> ExpectedMove(){
-       List<String> moves = new ArrayList<>();
+    public List<List<String>> ExpectedMove(){
+       List<List<String>> moves = new ArrayList<>();
        int[] iIndexs = new int[]{1,-1,-2,-2,-1,1,2,2};
        int[] jIndexs = new int[]{-2,-2,-1,1,2,2,1,-1};
        PieceManager pm = new PieceManager(); 
        int idx = pm.GetIindex(position);     
        int jdx = pm.GetJindex(position); 
        for(int x = 0; x<8;x++ ){
+           List<String> path = new ArrayList<>();
             int newIdx = idx+iIndexs[x];
             int newJdx = jdx+jIndexs[x]; 
 
             if(pm.IsIndexSafe(newIdx, newJdx)){
                 if((pm.GetPieceAtPosition(newIdx+""+newJdx)==null))
-                moves.add(newIdx+""+newJdx); 
+                path.add(newIdx+""+newJdx);
                 else{
                     if((pm.GetPieceAtPosition(newIdx+""+newJdx).getPlayer()!=player)){
-                        moves.add(newIdx+""+newJdx);
+                        path.add(newIdx+""+newJdx);
                     }
                 }
             }
+            moves.add(path);
        }
        return moves; 
     }

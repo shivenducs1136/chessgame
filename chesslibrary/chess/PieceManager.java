@@ -51,7 +51,7 @@ public class PieceManager {
         }
         return null;
     }
-    public void RestrictPlayersOnCheck(PlayerEnum playerColor) {
+    public void RestrictPiecesOnCheck(PlayerEnum playerColor) {
         List<Piece> pieces = GetPlayerPieces(playerColor);
         for(Piece piece:pieces){
             if(!(piece instanceof King)){
@@ -82,5 +82,26 @@ public class PieceManager {
             return PlayerEnum.White;
         }
         return PlayerEnum.Black;
+    }
+    public void AllowPiecesThatCanResolveCheck(List<String> checkPiecePath,PlayerEnum playerColor) {
+            List<Piece> pieces = GetPlayerPieces(playerColor);
+            for(Piece p:pieces){
+                List<List<String>> expectedPaths = p.ExpectedMove();
+                for (List<String> path:expectedPaths){
+                    for(String move:path){
+                        if(checkPiecePath.contains(move)){
+                            p.setCanMove(true);
+                        }
+                    }
+                }
+            }
+    }
+    public void AllowAllPiecesToMove(PlayerEnum playerChance) {
+        List<Piece> pieces = GetPlayerPieces(playerChance);
+        for(Piece piece:pieces){
+            if(!(piece instanceof King)){
+                piece.setCanMove(true);
+            }
+        }
     }
 }

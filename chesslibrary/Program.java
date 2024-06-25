@@ -13,15 +13,20 @@ class Program{
         ChessGame chessGame = new ChessGame();
         Scanner sc = new Scanner(System.in);
         String idx;
+        List<String> expectedMoves = null;
         do{
             printBoard(chessGame);
             String position;
+            String changePiece;
             do{
                 System.out.println("Enter position of piece to move without any space -");
                 position   = sc.nextLine();
                 System.out.println("Expected Moves of piece at: "+position);
-                printList(chessGame.GetExpectedMove(position));
-            }while(chessGame.GetExpectedMove(position)==null);
+                expectedMoves = chessGame.GetExpectedMove(position);
+                printList(expectedMoves);
+                System.out.println("Enter 0 to change piece Or Enter anything else to continue");
+                changePiece = sc.nextLine();
+            }while(expectedMoves == null || expectedMoves.isEmpty() || Objects.equals(changePiece, "0"));
 
             System.out.println("Enter new position where you want to move piece");
             String newPosition = sc.nextLine();
@@ -34,11 +39,11 @@ class Program{
 
     private static void printList(List<String> list){
         if(list == null){
-            System.out.println("null");
+            System.out.println("Piece can't move Enter any other piece");
             return;
         }
         if(list.isEmpty()){
-            System.out.println("empty");
+            System.out.println("Piece can't move Enter any other piece");
         }
         
         for (String str : list) {

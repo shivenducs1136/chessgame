@@ -21,35 +21,36 @@ public class Pawn extends Piece{
          canMove = true;
     }
     
-    public List<String> ExpectedMove(){
-       List<String> moves = new ArrayList<>(); 
+    public List<List<String>> ExpectedMove(){
+       List<List<String>> moves = new ArrayList<>();
        PieceManager pm = new PieceManager(); 
        int i = pm.GetIindex(position);
        int j = pm.GetJindex(position);
-       if(player == PlayerEnum.White){
-        int idx = i; 
-        if(isFirstMove){
+        List<String> pathForward = new ArrayList<>();
+        List<String> pathDiag = new ArrayList<>();
+        int idx = i;
 
-                int count = 0; 
+
+        if(player == PlayerEnum.White){
+        if(isFirstMove){
+            int count = 0;
                 while(count<2){
                     idx++; 
                     if(pm.IsPositionEmptyInBoard(idx, j)){
-                        moves.add(idx+""+j); 
+                        pathForward.add(idx+""+j);
                     }
                     else{
                         break; 
                     }
                     count ++; 
                 }
+        }
+        else{
+            idx++;
+            if(pm.IsPositionEmptyInBoard(idx,j)){
+                pathForward.add(idx+""+j);
             }
-            else{
-                idx++; 
-                if(pm.IsPositionEmptyInBoard(idx,j)){
-                    moves.add(idx+""+j); 
-                }
-               
-            }
- 
+        }
             int dj1 = j-1;
             int di = i+1; 
             int dj2 = j+1; 
@@ -58,24 +59,25 @@ public class Pawn extends Piece{
             Piece piece2 = pm.GetPieceAtPosition(di+""+dj2); 
             if(dj1>=0 && dj1<8){
                 if( piece1 != null && piece1.getPlayer()!=player){
-                    moves.add(di+""+dj1);
+                    pathDiag.add(di+""+dj1);
                 }
             }
             if(dj2>=0 && dj2<8){
                 if( piece2 != null && piece2.getPlayer()!=player){
-                    moves.add(di+""+dj2);
+                    pathDiag.add(di+""+dj2);
                 }
             }
+            moves.add(pathForward);
+            moves.add(pathDiag);
             return moves;
        }
        else{
-        int idx = i; 
         if(isFirstMove){
             int count = 0; 
             while(count<2){
                 idx--; 
                 if(pm.IsPositionEmptyInBoard(idx, j)){
-                    moves.add(idx+""+j); 
+                    pathForward.add(idx+""+j);
                 }
                 else{
                     break; 
@@ -86,7 +88,7 @@ public class Pawn extends Piece{
         else{
             idx--; 
             if(pm.IsPositionEmptyInBoard(idx,j)){
-                moves.add(idx+""+j); 
+                pathForward.add(idx+""+j);
             }
            
         }
@@ -98,14 +100,16 @@ public class Pawn extends Piece{
         Piece piece2 = pm.GetPieceAtPosition(di+""+dj2); 
         if(dj1>=0 && dj1<8){
             if( piece1 != null && piece1.getPlayer()!=player){
-                moves.add(di+""+dj1);
+                pathDiag.add(di+""+dj1);
             }
         }
         if(dj2>=0 && dj2<8){
             if( piece2 != null && piece2.getPlayer()!=player){
-                moves.add(di+""+dj2);
+                pathDiag.add(di+""+dj2);
             }
         }
+        moves.add(pathForward);
+        moves.add(pathDiag);
         return moves;
        }
     }

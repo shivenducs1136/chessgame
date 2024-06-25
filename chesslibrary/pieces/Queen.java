@@ -19,140 +19,25 @@ public class Queen extends Piece{
         canMove = true;
     }
     
-    public List<String> ExpectedMove(){
-        List<String> moves =  new ArrayList<String>(); 
-        PieceManager pm = new PieceManager(); 
-        int idx = pm.GetIindex(position); 
-        int jdx = pm.GetJindex(position);
-        int i = idx; 
-        int j = jdx; 
+    public List<List<String>> ExpectedMove(){
+        List<List<String>> moves =  new ArrayList<>();
+        PieceManager pm = new PieceManager();
+        int[] iIndexes = new int[]{-1,1,0,0,-1,1,1,-1};
+        int[] jIndexes = new int[]{0,0,-1,1,-1,1,-1,1};
 
-        // keeping j constant and  decreasing i
-        i--; 
-        while(
-            (i>=0 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (i>=0 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                i--; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-       
-        // keeping j constant and  increasing i
-        i++; 
-        while(
-            (i<8 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (i<8 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                i++; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-         
-        // keeping i constant and  decreasing j
-        j--; 
-        while(
-            (j>=0 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (j>=0 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                j--; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
+        // keeping decreasing i and j constant   -> -1,0
+        // keeping increasing i and j constant   -> 1,0
+        // keeping i constant and  decreasing j  -> 0,-1
+        // keeping i constant and  increasing j  -> 0,1
+        // decreasing i and decreasing j -> -1,-1
+        // increasing i and increasing j -> 1,1
+        // increasing i and decreasing j -> 1,-1
+        // decreasing i and increasing j -> -1,1
 
-        // keeping i constant and  increasing j
-        j++; 
-        while(
-            ( j<8 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            ( j<8 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                j++; 
-             }
-                 // reset i and j 
-        i = idx; j =jdx; 
-
-              // decreasing i decreasing j
-        i--; j--; 
-        while(
-            (i>=0 && j>=0 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (i>=0 && j>=0 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                i--; 
-                j--; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-       
-        // increasing i increasing j
-        i++; 
-        j++; 
-        while(
-            (i<8 && j<8 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (i<8 && j<8 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                i++; 
-                j++; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-         
-        // increasing i  decreasing j
-        j--; 
-        i++; 
-        while(
-            (j>=0 && i<8 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            (j>=0 && i<8 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                j--; 
-                i++; 
-             }
-        // reset i and j 
-        i = idx; j =jdx; 
-
-        // decreasing i  increasing j
-        j++; 
-        i--; 
-        while(
-            ( i>=0 && j<8 && (pm.GetPieceAtPosition(i +""+j) == null)) ||
-            ( i>=0 && j<8 && (pm.GetPieceAtPosition(i +""+j).getPlayer() != player))
-             ){
-                moves.add(i+""+j); 
-                if(pm.GetPieceAtPosition(i +""+j) != null){
-                    break; 
-                }
-                j++; 
-                i--; 
-             }
-
-        return moves; 
+        for(int x = 0; x<8;x++){
+            moves.add(GetValidMovesInDirection(pm,iIndexes[x],jIndexes[x]));
+        }
+        return moves;
     }
 
     public boolean getCanMove() {
