@@ -21,7 +21,7 @@ public class  Knight extends Piece{
         isKilled =false;
         canMove = true; }
     
-    public List<List<String>> ExpectedMove(){
+    public List<List<String>> ExpectedPaths(List<List<Piece>> board){
        List<List<String>> moves = new ArrayList<>();
        int[] iIndexs = new int[]{1,-1,-2,-2,-1,1,2,2};
        int[] jIndexs = new int[]{-2,-2,-1,1,2,2,1,-1};
@@ -34,10 +34,10 @@ public class  Knight extends Piece{
             int newJdx = jdx+jIndexs[x]; 
 
             if(pm.IsIndexSafe(newIdx, newJdx)){
-                if((pm.GetPieceAtPosition(newIdx+""+newJdx)==null))
+                if((pm.GetPieceAtPosition(newIdx+""+newJdx,board)==null))
                 path.add(newIdx+""+newJdx);
                 else{
-                    if((pm.GetPieceAtPosition(newIdx+""+newJdx).getPlayer()!=player)){
+                    if((pm.GetPieceAtPosition(newIdx+""+newJdx,board).getPlayer()!=player)){
                         path.add(newIdx+""+newJdx);
                     }
                 }

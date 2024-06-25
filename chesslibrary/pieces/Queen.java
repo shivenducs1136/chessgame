@@ -19,7 +19,7 @@ public class Queen extends Piece{
         canMove = true;
     }
     
-    public List<List<String>> ExpectedMove(){
+    public List<List<String>> ExpectedPaths(List<List<Piece>> board){
         List<List<String>> moves =  new ArrayList<>();
         PieceManager pm = new PieceManager();
         int[] iIndexes = new int[]{-1,1,0,0,-1,1,1,-1};
@@ -35,7 +35,7 @@ public class Queen extends Piece{
         // decreasing i and increasing j -> -1,1
 
         for(int x = 0; x<8;x++){
-            moves.add(GetValidMovesInDirection(pm,iIndexes[x],jIndexes[x]));
+            moves.add(GetValidMovesInDirection(pm,iIndexes[x],jIndexes[x],board));
         }
         return moves;
     }

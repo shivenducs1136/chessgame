@@ -61,7 +61,7 @@ class Program{
         for(int i = 0; i< 8; i++){
             System.out.print(i + " ");
             for(int j= 0; j<8; j++){
-                Piece piece = ChessGame.board.get(i).get(j)  ;
+                Piece piece = chessGame.GetBoard().get(i).get(j)  ;
                 if(piece != null){
                     if(piece instanceof Rook r){
                         System.out.print( GetWorB(piece.getPlayer()) +"Rook" +r.getPosition()+"   ");

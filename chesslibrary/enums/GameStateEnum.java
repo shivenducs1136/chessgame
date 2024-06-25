@@ -6,5 +6,6 @@ public enum GameStateEnum {
     Draw,
     StaleMate,
     Check,
-    GameOver
+    WonByWhite,
+    WonByBlack
 }

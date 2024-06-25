@@ -1,0 +1,1 @@
+{"name":"Local: Program","url":"e:\\chessgame\\chesslibrary\\Program.java","tests":[{"id":1719319136487,"input":"13\nd\n33\nd\n64\nd\n44\nc\n04\nf\n40\nf\n65\nf\n55\nf","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\chessgame\\chesslibrary\\Program.java","group":"local","local":true}
