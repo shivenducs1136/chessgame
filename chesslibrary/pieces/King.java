@@ -38,24 +38,15 @@ public class King extends Piece{
     }
 
     private boolean CheckIfExpectedPositionValid(PieceManager pm, String expectedPosition,List<List<Piece>> board) {
-        List<List<Piece>> newBoard = new ArrayList<>(GetNewBoard(board));
+        List<List<Piece>> newBoard = new ArrayList<>(pm.GetBoardClone(board));
         int i = pm.GetIindex(expectedPosition);
         int j = pm.GetJindex(expectedPosition);
+        newBoard.get(pm.GetIindex(position)).set(pm.GetJindex(position),null);
         newBoard.get(i).set(j,this);
         return pm.IsCheck(player, expectedPosition, newBoard) == null;
     }
 
-    private List<List<Piece>> GetNewBoard(List<List<Piece>> board) {
-        List<List<Piece>> newBoard = new ArrayList<>();
-        for(List<Piece> row:board){
-            List<Piece> list = new ArrayList<>();
-            for(Piece p : row){
-                list.add(p);
-            }
-            newBoard.add(list);
-        }
-        return newBoard;
-    }
+
 
     public List<String> GetAllValidMoves(PieceManager pm,List<List<Piece>> board) {
         List<String> moves = new ArrayList<>();

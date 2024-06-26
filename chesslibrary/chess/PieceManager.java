@@ -203,7 +203,7 @@ public class PieceManager {
     }
     private static List<Piece> getWhitePieces() {
         Piece whiteRook1 = new Rook(PlayerEnum.White, "00");
-        Piece whiteRook2 = new Rook(PlayerEnum.White, "70");
+        Piece whiteRook2 = new Rook(PlayerEnum.White, "07");
         Piece whiteKnight1 = new Knight(PlayerEnum.White, "01");
         Piece whiteKnight2 = new Knight(PlayerEnum.White, "06");
         Piece whiteBishop1 = new Bishop(PlayerEnum.White, "02");
@@ -225,5 +225,16 @@ public class PieceManager {
     public void RemoveKilledPiece(Piece p) {
         List<Piece> pieces = GetPlayerPieces(p.getPlayer());
         pieces.remove(p);
+    }
+    public List<List<Piece>> GetBoardClone(List<List<Piece>> board) {
+        List<List<Piece>> newBoard = new ArrayList<>();
+        for(List<Piece> row:board){
+            List<Piece> list = new ArrayList<>();
+            for(Piece p : row){
+                list.add(p);
+            }
+            newBoard.add(list);
+        }
+        return newBoard;
     }
 }

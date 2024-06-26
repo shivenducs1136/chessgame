@@ -1,7 +1,6 @@
-import abstracts.Chess;
 import abstracts.Piece;
-import chess.ChessGame;
-import enums.PieceEnum;
+import chess.ChessEngine;
+import chess.ChessEngine;
 import enums.PlayerEnum;
 import pieces.Bishop;
 import pieces.King;
@@ -12,31 +11,31 @@ import pieces.Rook;
 import java.util.*;;
 class Program{
     public static void main(String[] args) {
-        ChessGame chessGame = new ChessGame(new UserChess());
+        ChessEngine chessEngine = new ChessEngine(new UserChess());
         Scanner sc = new Scanner(System.in);
         String idx;
         List<String> expectedMoves = null;
         do{
-            printBoard(chessGame);
+            printBoard(chessEngine);
             String position;
             String changePiece;
             do{
                 System.out.println("Enter position of piece to move without any space -");
                 position   = sc.nextLine();
                 System.out.println("Expected Moves of piece at: "+position);
-                expectedMoves = chessGame.GetExpectedMove(position);
+                expectedMoves = chessEngine.GetExpectedMoves(position);
                 printList(expectedMoves);
-                System.out.println("Enter 0 to change piece Or Enter anything else to continue");
-                changePiece = sc.nextLine();
-            }while(expectedMoves == null || expectedMoves.isEmpty() || Objects.equals(changePiece, "0"));
+//                System.out.println("Enter 0 to change piece Or Enter anything else to continue");
+//                changePiece = sc.nextLine();
+            }while(expectedMoves == null || expectedMoves.isEmpty() );
 
             System.out.println("Enter new position where you want to move piece");
             String newPosition = sc.nextLine();
-            chessGame.Move(position,newPosition);
-            printBoard(chessGame);
-            System.out.println("To continue press any key or press 0 to exit.");
-            idx = sc.nextLine();
-        }while(!Objects.equals(idx, "0"));
+            chessEngine.MovePiece(position,newPosition);
+            printBoard(chessEngine);
+//            System.out.println("To continue press any key or press 0 to exit.");
+//            idx = sc.nextLine();
+        }while(Objects.equals("0", "0"));
     }
 
     private static void printList(List<String> list){
@@ -52,35 +51,35 @@ class Program{
         }
 
     }
-    private static void printBoard(ChessGame chessGame){
+    private static void printBoard(ChessEngine chessEngine){
         System.out.println();
         System.out.print("  ");
-        for(int i = 0; i< 8 ; i++){
-            System.out.print("  "+i+"       ");
+        for(int i = 7; i>=0 ; i--){
+            System.out.print("  "+(char)('a'+i)+"       ");
         }
         System.out.println();
         for(int i = 0; i< 8; i++){
-            System.out.print(i + " ");
+            System.out.print(i+1 + " ");
             for(int j= 0; j<8; j++){
-                Piece piece = chessGame.GetBoard().get(i).get(j)  ;
+                Piece piece = chessEngine.GetPieceFromBoard(i,j)  ;
                 if(piece != null){
                     if(piece instanceof Rook r){
-                        System.out.print( GetWorB(piece.getPlayer()) +"Rook" +r.getPosition()+"   ");
+                        System.out.print( GetWorB(r.getPlayer()) +"Rook" +chessEngine.GetPiecePosition(piece).toUpperCase()+"   ");
                     }
                     else if(piece instanceof Bishop r){
-                        System.out.print(  GetWorB(piece.getPlayer()) +"Bishop" +r.getPosition()+" ");
+                        System.out.print(  GetWorB(r.getPlayer()) +"Bishop" +chessEngine.GetPiecePosition(piece).toUpperCase()+" ");
                     }
                     else if(piece instanceof Knight r){
-                        System.out.print( GetWorB(piece.getPlayer()) +"Knight" +r.getPosition()+" ");
+                        System.out.print( GetWorB(r.getPlayer()) +"Knight" +chessEngine.GetPiecePosition(piece).toUpperCase()+" ");
                     }
                     else if(piece instanceof King r){
-                        System.out.print( GetWorB(piece.getPlayer()) +"King" +r.getPosition()+"   ");
+                        System.out.print( GetWorB(r.getPlayer()) +"King" +chessEngine.GetPiecePosition(piece).toUpperCase()+"   ");
                     }
                     else if(piece instanceof Queen r){
-                        System.out.print(  GetWorB(piece.getPlayer()) +"Queen" +r.getPosition()+"  ");
+                        System.out.print(  GetWorB(r.getPlayer()) +"Queen" +chessEngine.GetPiecePosition(piece).toUpperCase()+"  ");
                     }
                     else if(piece instanceof Pawn r){
-                        System.out.print(  GetWorB(piece.getPlayer()) +"Pawn" +r.getPosition()+"   ");
+                        System.out.print(  GetWorB(r.getPlayer()) +"Pawn" +chessEngine.GetPiecePosition(piece).toUpperCase()+"   ");
                     }
                 }
                 else{
@@ -89,8 +88,8 @@ class Program{
             }
             System.out.println();
         }
-        System.out.println("Current Chance    - " + chessGame.getPlayer());
-        System.out.println("Current GameState - " + chessGame.currentGameState);
+        System.out.println("Current Chance    - " + chessEngine.GetCurrentPlayer());
+        System.out.println("Current EngineState - " + chessEngine.GetCurrentGameState());
     }
     private static String GetWorB(PlayerEnum playerEnum){
         if(playerEnum == PlayerEnum.White){

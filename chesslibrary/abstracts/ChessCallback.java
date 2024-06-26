@@ -2,6 +2,6 @@ package abstracts;
 
 import enums.PieceEnum;
 
-public interface Chess {
+public interface ChessCallback {
     public PieceEnum GetSelectedPieceForPawnUpgrade();
 }

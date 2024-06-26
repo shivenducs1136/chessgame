@@ -21,13 +21,13 @@ public class ChessGame {
     public GameStateEnum currentGameState;
     private List<String> checkPiecePath = null;
     private final PieceManager pieceManager = new PieceManager();
-    private final Chess chess;
-    public ChessGame(Chess c){
+    private final ChessCallback chess;
+    public ChessGame(ChessCallback c){
         chess = c;
         pieceManager.CreatePieces(board);
         setCurrentGameState(GameStateEnum.Initialized);
     }
-    public ChessGame(Chess c,List<List<Piece>> boardState){
+    public ChessGame(ChessCallback c, List<List<Piece>> boardState){
         chess = c;
         board = boardState;
         setCurrentGameState(GameStateEnum.Initialized);
@@ -35,7 +35,7 @@ public class ChessGame {
     public List<String> GetExpectedMove(String position){
         List<String> moves = null;
         Piece currentPiece = pieceManager.GetPieceAtPosition(position,board);
-        if(currentPiece == null) return null;
+        if(currentPiece == null) return new ArrayList<>();
         if(playerChance == currentPiece.getPlayer()){
             if(currentPiece.getCanMove()){
                 moves = currentPiece.ExpectedPaths(board).
@@ -55,21 +55,52 @@ public class ChessGame {
                         moves.addAll(mvs);
                     }
                 }
+                for(String mv:moves){
+                    if (IsMoveCausingCheck(currentPiece,mv)){
+                        moves.remove(mv);
+                    }
+                }
                 return moves;
             }
         }
         return new ArrayList<>();
     }
+
+    private boolean IsMoveCausingCheck(Piece currentPiece,String mv) {
+        var newBoard = pieceManager.GetBoardClone(board);
+        newBoard.get(pieceManager.GetIindex(currentPiece.getPosition())).set(pieceManager.GetJindex(currentPiece.getPosition()),null);
+        newBoard.get(pieceManager.GetIindex(mv)).set(pieceManager.GetJindex(mv),currentPiece);
+
+        return false;
+    }
+
     public void Move(String oldPosition, String newPosition){
         Piece currentPiece = pieceManager.GetPieceAtPosition(oldPosition,board);
         if(currentPiece.getPlayer() == playerChance){
-            PerformMove(currentPiece,newPosition);
+            PerformMove(currentPiece,newPosition,board);
             setCurrentGameState(GameStateEnum.Running);
             SwitchChance();
             UpdateGameState();
         }
     }
-    public Piece UpgradePawn(String oldPosition, PieceEnum upgradePawnTo){
+
+    public Piece GetPieceOnBoard(int i,int j){
+        return board.get(i).get(j);
+    }
+    public void setCurrentGameState(GameStateEnum currentGameState) {
+        this.currentGameState = currentGameState;
+    }
+    public PlayerEnum getPlayer() {
+        return playerChance;
+    }
+
+    private List<String> GetCastleMovesIfPossible(Piece piece) {
+        King k = (King)piece;
+        if(currentGameState == GameStateEnum.Check)
+            return new ArrayList<>();
+        return k.GetCastleMovesIfPossible(board);
+    }
+    private Piece UpgradePawn(String oldPosition, PieceEnum upgradePawnTo){
         if(upgradePawnTo.canUpgradeByPawn){
             int i = pieceManager.GetIindex(oldPosition);
             int j = pieceManager.GetJindex(oldPosition);
@@ -96,26 +127,7 @@ public class ChessGame {
         }
         return null;
     }
-
-    private List<String> GetCastleMovesIfPossible(Piece piece) {
-        King k = (King)piece;
-        if(currentGameState == GameStateEnum.Check)
-            return new ArrayList<>();
-        return k.GetCastleMovesIfPossible(board);
-    }
-
-
-
-    public List<List<Piece>> GetBoard(){
-        return board;
-    }
-    public void setCurrentGameState(GameStateEnum currentGameState) {
-        this.currentGameState = currentGameState;
-    }
-    public PlayerEnum getPlayer() {
-        return playerChance;
-    }
-    private void PerformMove(Piece currentPiece,String newPosition) {
+    private void PerformMove(Piece currentPiece,String newPosition,List<List<Piece>> board) {
         String oldPosition = currentPiece.getPosition();
         var moves = GetExpectedMove(oldPosition);
         if(moves.contains(newPosition)){
@@ -124,7 +136,7 @@ public class ChessGame {
                 p.setIsKilled(true);
                 pieceManager.RemoveKilledPiece(p);
             }
-            if((currentPiece instanceof King k) && k.GetCastleMoves().contains(newPosition) && currentGameState!=GameStateEnum.Check){
+            if((currentPiece instanceof King k) && k.GetCastleMovesIfPossible(board).contains(newPosition) && currentGameState!=GameStateEnum.Check){
                 PerformCastleMove(k,newPosition);
             }
             else{
@@ -133,6 +145,7 @@ public class ChessGame {
                     Piece pp = UpgradePawn(oldPosition,pieceEnum);
                     if(pp !=null){
                         currentPiece = pp;
+                        pieceManager.SeggregatePiece(currentPiece);
                     }
                 }
                 board.get(pieceManager.GetIindex(newPosition)).set(pieceManager.GetJindex(newPosition), currentPiece);
@@ -197,6 +210,10 @@ public class ChessGame {
         else{
             playerChance = PlayerEnum.White;
         }
+    }
+
+    public List<List<Piece>> GetBoard() {
+            return board;
     }
 
 

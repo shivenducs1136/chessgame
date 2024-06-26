@@ -1,9 +1,9 @@
-import abstracts.Chess;
+import abstracts.ChessCallback;
 import enums.PieceEnum;
 
 import java.util.Scanner;
 
-public class UserChess implements Chess {
+public class UserChess implements ChessCallback {
     @Override
     public PieceEnum GetSelectedPieceForPawnUpgrade() {
         System.out.println("Enter piece name in small letter to upgrade \n queen, rook, bishop, knight");
