@@ -1,9 +1,14 @@
 package enums;
-public enum PieceEnum{
-    King,
-    Queen,
-    Knight,
-    Bishop, 
-    Rook, 
-    Pawn, 
+public enum PieceEnum {
+    King(false),
+    Queen(true),
+    Knight(true),
+    Bishop(true),
+    Rook(true),
+    Pawn(false);
+
+    public final boolean canUpgradeByPawn;
+    private PieceEnum(boolean canUpgradeByPawn){
+        this.canUpgradeByPawn = canUpgradeByPawn;
+    }
 }

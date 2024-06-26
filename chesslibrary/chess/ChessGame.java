@@ -2,6 +2,7 @@ package chess;
 
 import abstracts.*;
 import enums.GameStateEnum;
+import enums.PieceEnum;
 import enums.PlayerEnum;
 import pieces.Bishop;
 import pieces.King;
@@ -20,12 +21,14 @@ public class ChessGame {
     public GameStateEnum currentGameState;
     private List<String> checkPiecePath = null;
     private final PieceManager pieceManager = new PieceManager();
-
-    public ChessGame(){
+    private final Chess chess;
+    public ChessGame(Chess c){
+        chess = c;
         pieceManager.CreatePieces(board);
         setCurrentGameState(GameStateEnum.Initialized);
     }
-    public ChessGame(List<List<Piece>> boardState){
+    public ChessGame(Chess c,List<List<Piece>> boardState){
+        chess = c;
         board = boardState;
         setCurrentGameState(GameStateEnum.Initialized);
     }
@@ -44,7 +47,13 @@ public class ChessGame {
                             updatedMoves.add(mv);
                         }
                     }
-                    return updatedMoves;
+                    moves = updatedMoves;
+                }
+                if(currentPiece instanceof King){
+                    var mvs=GetCastleMovesIfPossible(currentPiece);
+                    if(!mvs.isEmpty()){
+                        moves.addAll(mvs);
+                    }
                 }
                 return moves;
             }
@@ -60,6 +69,43 @@ public class ChessGame {
             UpdateGameState();
         }
     }
+    public Piece UpgradePawn(String oldPosition, PieceEnum upgradePawnTo){
+        if(upgradePawnTo.canUpgradeByPawn){
+            int i = pieceManager.GetIindex(oldPosition);
+            int j = pieceManager.GetJindex(oldPosition);
+            Piece newPiece;
+            switch (upgradePawnTo){
+                case Rook ->{
+                    newPiece = new Rook(playerChance,oldPosition);
+                    break;
+                }
+                case Bishop -> {
+                    newPiece = new Bishop(playerChance,oldPosition);
+                    break;
+                }
+                case Knight -> {
+                    newPiece = new Knight(playerChance,oldPosition);
+                    break;
+                }
+                default -> {
+                    newPiece = new Queen(playerChance,oldPosition);
+                    break;
+                }
+            }
+            return newPiece;
+        }
+        return null;
+    }
+
+    private List<String> GetCastleMovesIfPossible(Piece piece) {
+        King k = (King)piece;
+        if(currentGameState == GameStateEnum.Check)
+            return new ArrayList<>();
+        return k.GetCastleMovesIfPossible(board);
+    }
+
+
+
     public List<List<Piece>> GetBoard(){
         return board;
     }
@@ -78,12 +124,47 @@ public class ChessGame {
                 p.setIsKilled(true);
                 pieceManager.RemoveKilledPiece(p);
             }
-            board.get(pieceManager.GetIindex(newPosition)).set(pieceManager.GetJindex(newPosition), currentPiece);
-            board.get(pieceManager.GetIindex(oldPosition)).set(pieceManager.GetJindex(oldPosition), null);
-            currentPiece.setPosition(newPosition);
-            if(currentPiece instanceof Pawn pw){
-                pw.FirstMoveDone();
+            if((currentPiece instanceof King k) && k.GetCastleMoves().contains(newPosition) && currentGameState!=GameStateEnum.Check){
+                PerformCastleMove(k,newPosition);
             }
+            else{
+                if((currentPiece instanceof Pawn pwn) && !pwn.upgradableMoves.isEmpty()){
+                    PieceEnum pieceEnum = chess.GetSelectedPieceForPawnUpgrade();
+                    Piece pp = UpgradePawn(oldPosition,pieceEnum);
+                    if(pp !=null){
+                        currentPiece = pp;
+                    }
+                }
+                board.get(pieceManager.GetIindex(newPosition)).set(pieceManager.GetJindex(newPosition), currentPiece);
+                board.get(pieceManager.GetIindex(oldPosition)).set(pieceManager.GetJindex(oldPosition), null);
+                currentPiece.setPosition(newPosition);
+            }
+            currentPiece.setFirstMoveToFalse();
+        }
+    }
+
+
+    private void PerformCastleMove(King k,String newPosition) {
+        int j = pieceManager.GetJindex(newPosition);
+        if(j == 1){
+            //LeftCastle
+            board.get(pieceManager.GetIindex(newPosition)).set(pieceManager.GetJindex(newPosition), k);
+            board.get(pieceManager.GetIindex(k.getPosition())).set(pieceManager.GetJindex(k.getPosition()), null);
+            k.setPosition(newPosition);
+            Rook r = (Rook)board.get(pieceManager.GetIindex(k.getPosition())).get(0);
+            board.get(pieceManager.GetIindex(k.getPosition())).set(2,r);
+            board.get(pieceManager.GetIindex(r.getPosition())).set(0, null);
+            r.setPosition(pieceManager.GetIindex(k.getPosition())+"2");
+        }
+        else{
+            //Right Castle
+            board.get(pieceManager.GetIindex(newPosition)).set(pieceManager.GetJindex(newPosition), k);
+            board.get(pieceManager.GetIindex(k.getPosition())).set(pieceManager.GetJindex(k.getPosition()), null);
+            k.setPosition(newPosition);
+            Rook r = (Rook)board.get(pieceManager.GetIindex(k.getPosition())).get(0);
+            board.get(pieceManager.GetIindex(k.getPosition())).set(4,r);
+            board.get(pieceManager.GetIindex(r.getPosition())).set(7, null);
+            r.setPosition(pieceManager.GetIindex(k.getPosition())+"4");
         }
     }
     private void UpdateGameState() {
@@ -109,7 +190,6 @@ public class ChessGame {
             }
         }
     }
-
     private void SwitchChance(){
         if(playerChance == PlayerEnum.White){
             playerChance = PlayerEnum.Black; 

@@ -11,13 +11,15 @@ import enums.PieceEnum;
 import enums.PlayerEnum;
 
 public class King extends Piece{
+    private boolean IsCastleAllowed =false;
+    private List<String> possibleCastleMoves = null;
     public King( PlayerEnum playerEnum,String position) {
         player = playerEnum;
         this.position = position;
         isKilled =false;
         canMove = true;
     }
-    
+
     public List<List<String>> ExpectedPaths(List<List<Piece>> board){
        PieceManager pm = new PieceManager();
         List<List<String>> moves = new ArrayList<>();
@@ -78,33 +80,6 @@ public class King extends Piece{
         return moves;
     }
 
-//    private List<String> GetOppositePlayerPieceMovesThatCanHarmKing(PieceManager pm) {
-//        List<String> moves = new ArrayList<>();
-//        List<Piece> oppositeColorPieces = pm.GetPlayerPieces(pm.GetOppositePlayerColor(player));
-//
-//        for (Piece piece : oppositeColorPieces) {
-//            List<String> pcMoves;
-//            if(piece instanceof King){
-//                pcMoves = pm.GetPointsCommonInBothKing(board);
-//
-//            }
-//            else{
-//                var expectedMoves = piece.ExpectedPaths();
-//                pcMoves = new ArrayList<>();
-//                for(List<String> exMoves:expectedMoves){
-//                    pcMoves.addAll(exMoves);
-//                }
-//            }
-//            for (String mv : pcMoves) {
-//                if(!moves.contains(mv)){
-//                    moves.add(mv);
-//                }
-//            }
-//        }
-//        return moves;
-//    }
-
-
     public boolean getCanMove() {
         return canMove;
     }
@@ -125,5 +100,140 @@ public class King extends Piece{
     }
     public void setIsKilled(boolean isKilled) {
        this.isKilled = isKilled;
+    }
+    public List<String> GetCastleMoves(){
+        return possibleCastleMoves;
+    }
+
+    public List<String> GetCastleMovesIfPossible(List<List<Piece>> board) {
+        List<String> moves = new ArrayList<>();
+
+        if(player == PlayerEnum.Black){
+
+            boolean isRook1FirstMove = false;
+            boolean isRook2FirstMove = false;
+            boolean isKingFirstMove = isFirstMove;
+            boolean isKingLeftPositionEmpty = false;
+            boolean isKingRightPositionEmpty = false;
+            boolean isKingLeftPositionNoThreats = false;
+            boolean isKingRightPositionNoThreats = false;
+
+            PieceManager pm = new PieceManager();
+
+            // check for roo1 and rook2 first move
+            if(isKingFirstMove){
+                List<Piece> pieces = pm.GetPlayerPieces(player);
+                boolean b = true;
+                for (Piece p:pieces){
+                    if((p instanceof Rook) && p.isFirstMove()){
+                        if(b){
+                            isRook1FirstMove = true;
+                            b = false;
+                        }
+                        else isRook2FirstMove = true;
+                    }
+                }
+                if(isRook1FirstMove){
+
+                    String position1 = "71";
+                    String position2 = "72";
+                    Piece p = pm.GetPieceAtPosition(position1,board);
+                    Piece p2 = pm.GetPieceAtPosition(position2,board);
+                    if(p == null && p2 == null){
+                        isKingLeftPositionEmpty = true;
+                        if(CheckIfExpectedPositionValid(pm,position1,board) && CheckIfExpectedPositionValid(pm,position2,board)){
+                            isKingLeftPositionNoThreats = true;
+                            // Castling is allowed here
+                            moves.add(position1) ;
+                        }
+                    }
+
+                }
+                if(isRook2FirstMove){
+                    String position1 = "74";
+                    String position2 = "75";
+                    String position3 = "76";
+                    Piece p = pm.GetPieceAtPosition(position1,board);
+                    Piece p2 = pm.GetPieceAtPosition(position2,board);
+                    Piece p3 = pm.GetPieceAtPosition(position3,board);
+
+                    if(p == null && p2 == null && p3 == null){
+                        isKingRightPositionEmpty = true;
+                        if(CheckIfExpectedPositionValid(pm,position1,board) && CheckIfExpectedPositionValid(pm,position2,board) ){
+                            isKingRightPositionNoThreats = true;
+                            // Castling is allowed here
+                            moves.add(position2) ;
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            boolean isRook1FirstMove = false;
+            boolean isRook2FirstMove = false;
+            boolean isKingFirstMove = isFirstMove;
+            boolean isKingLeftPositionEmpty = false;
+            boolean isKingRightPositionEmpty = false;
+            boolean isKingLeftPositionNoThreats = false;
+            boolean isKingRightPositionNoThreats = false;
+
+            PieceManager pm = new PieceManager();
+
+            // check for roo1 and rook2 first move
+            if(isKingFirstMove){
+                List<Piece> pieces = pm.GetPlayerPieces(player);
+                boolean b = true;
+                for (Piece p:pieces){
+                    if((p instanceof Rook) && p.isFirstMove()){
+                        if(b){
+                            isRook1FirstMove = true;
+                            b = false;
+                        }
+                        else isRook2FirstMove = true;
+                    }
+                }
+                if(isRook1FirstMove){
+
+                    String position1 = "01";
+                    String position2 = "02";
+                    Piece p = pm.GetPieceAtPosition(position1,board);
+                    Piece p2 = pm.GetPieceAtPosition(position2,board);
+                    if(p == null && p2 == null){
+                        isKingLeftPositionEmpty = true;
+                        if(CheckIfExpectedPositionValid(pm,position1,board) && CheckIfExpectedPositionValid(pm,position2,board)){
+                            isKingLeftPositionNoThreats = true;
+                            // Castling is allowed here
+                            moves.add(position1) ;
+                        }
+                    }
+
+                }
+                if(isRook2FirstMove){
+                    String position1 = "04";
+                    String position2 = "05";
+                    String position3 = "06";
+                    Piece p = pm.GetPieceAtPosition(position1,board);
+                    Piece p2 = pm.GetPieceAtPosition(position2,board);
+                    Piece p3 = pm.GetPieceAtPosition(position3,board);
+
+                    if(p == null && p2 == null && p3 == null){
+                        isKingRightPositionEmpty = true;
+                        if(CheckIfExpectedPositionValid(pm,position1,board) && CheckIfExpectedPositionValid(pm,position2,board) ){
+                            isKingRightPositionNoThreats = true;
+                            // Castling is allowed here
+                            moves.add(position2) ;
+                        }
+                    }
+                }
+            }
+        }
+        if(moves.isEmpty()){
+            IsCastleAllowed = false;
+        }
+        else{
+            IsCastleAllowed = true;
+        }
+        possibleCastleMoves=moves;
+        return moves;
     }
 }

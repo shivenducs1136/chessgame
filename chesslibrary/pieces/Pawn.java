@@ -11,9 +11,8 @@ import enums.PieceEnum;
 import enums.PlayerEnum;
 
 public class Pawn extends Piece{
-    public boolean isFirstMove = true;
-    public String position; 
 
+    public List<String> upgradableMoves = new ArrayList<>();
     public Pawn( PlayerEnum playerEnum,String position) {
         this.player = playerEnum;
         this.position = position;
@@ -67,6 +66,18 @@ public class Pawn extends Piece{
                     pathDiag.add(di+""+dj2);
                 }
             }
+            for(String s:pathForward){
+                int newI = pm.GetIindex(s);
+                if(newI == 7){
+                    upgradableMoves.add(s);
+                }
+            }
+            for(String s:pathDiag){
+                int newI = pm.GetIindex(s);
+                if(newI == 7){
+                    upgradableMoves.add(s);
+                }
+            }
             moves.add(pathForward);
             moves.add(pathDiag);
             return moves;
@@ -110,6 +121,18 @@ public class Pawn extends Piece{
         }
         moves.add(pathForward);
         moves.add(pathDiag);
+            for(String s:pathForward){
+                int newI = pm.GetIindex(s);
+                if(newI == 0){
+                    upgradableMoves.add(s);
+                }
+            }
+            for(String s:pathDiag){
+                int newI = pm.GetIindex(s);
+                if(newI == 0){
+                    upgradableMoves.add(s);
+                }
+            }
         return moves;
        }
     }

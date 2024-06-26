@@ -1,5 +1,7 @@
+import abstracts.Chess;
 import abstracts.Piece;
 import chess.ChessGame;
+import enums.PieceEnum;
 import enums.PlayerEnum;
 import pieces.Bishop;
 import pieces.King;
@@ -10,7 +12,7 @@ import pieces.Rook;
 import java.util.*;;
 class Program{
     public static void main(String[] args) {
-        ChessGame chessGame = new ChessGame();
+        ChessGame chessGame = new ChessGame(new UserChess());
         Scanner sc = new Scanner(System.in);
         String idx;
         List<String> expectedMoves = null;
@@ -45,7 +47,6 @@ class Program{
         if(list.isEmpty()){
             System.out.println("Piece can't move Enter any other piece");
         }
-        
         for (String str : list) {
             System.out.println(str);
         }

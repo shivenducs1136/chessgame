@@ -12,7 +12,7 @@ public abstract class Piece {
     protected boolean isKilled;
     protected boolean canMove;
     protected String position;
-
+    protected boolean isFirstMove = true;
     abstract public List<List<String>> ExpectedPaths(List<List<Piece>> board);
     abstract public PlayerEnum getPlayer();
     abstract public boolean isKilled();
@@ -42,4 +42,8 @@ public abstract class Piece {
         }
         return moves;
     }
+    public void setFirstMoveToFalse(){
+        this.isFirstMove = false;
+    }
+    public boolean isFirstMove(){return isFirstMove;}
 }
