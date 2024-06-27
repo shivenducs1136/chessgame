@@ -14,7 +14,7 @@ public class AlgebraicNotationConverter {
         InitializeMap();
     }
 
-    public String GetCoordinatesFromAlgebraicNotation(String algebraicNotation){
+    public String getCoordinatesFromAlgebraicNotation(String algebraicNotation){
         String res = "";
         if(algebraicNotation.length()>1){
             if(numberMap.containsKey(algebraicNotation.charAt(1))){
@@ -26,10 +26,10 @@ public class AlgebraicNotationConverter {
         }
         return res;
     }
-    public List<String> GetCoordinatesFromAlgebraicNotation(List<String> algebraicNotations){
+    public List<String> getCoordinatesFromAlgebraicNotation(List<String> algebraicNotations){
         List<String> res= new ArrayList<>();
         for(String s: algebraicNotations){
-            res.add(GetCoordinatesFromAlgebraicNotation(s));
+            res.add(getCoordinatesFromAlgebraicNotation(s));
         }
         return res;
     }
@@ -71,7 +71,7 @@ public class AlgebraicNotationConverter {
         numberMapFlipped.put('7','8');
     }
 
-    public String GetAlgebraicNotationFromCoordinates(String coordinateNotation) {
+    public String getAlgebraicNotationFromCoordinates(String coordinateNotation) {
         String res = "";
         if(coordinateNotation.length()>1){
             if(algebraMapFlipped.containsKey(coordinateNotation.charAt(1))){
@@ -83,10 +83,10 @@ public class AlgebraicNotationConverter {
         }
         return res;
     }
-    public List<String> GetAlgebraicNotationFromCoordinates(List<String> positions){
+    public List<String> getAlgebraicNotationFromCoordinates(List<String> positions){
         List<String> res= new ArrayList<>();
         for(String s: positions){
-            res.add(GetAlgebraicNotationFromCoordinates(s));
+            res.add(getAlgebraicNotationFromCoordinates(s));
         }
         return res;
     }

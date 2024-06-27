@@ -21,23 +21,23 @@ public class  Knight extends Piece{
         isKilled =false;
         canMove = true; }
     
-    public List<List<String>> ExpectedPaths(List<List<Piece>> board){
+    public List<List<String>> expectedPaths(List<List<Piece>> board){
        List<List<String>> moves = new ArrayList<>();
        int[] iIndexs = new int[]{1,-1,-2,-2,-1,1,2,2};
        int[] jIndexs = new int[]{-2,-2,-1,1,2,2,1,-1};
        PieceManager pm = new PieceManager(); 
-       int idx = pm.GetIindex(position);     
-       int jdx = pm.GetJindex(position); 
+       int idx = pm.getIindex(position);     
+       int jdx = pm.getJindex(position); 
        for(int x = 0; x<8;x++ ){
            List<String> path = new ArrayList<>();
             int newIdx = idx+iIndexs[x];
             int newJdx = jdx+jIndexs[x]; 
 
-            if(pm.IsIndexSafe(newIdx, newJdx)){
-                if((pm.GetPieceAtPosition(newIdx+""+newJdx,board)==null))
+            if(pm.isIndexSafe(newIdx, newJdx)){
+                if((pm.getPieceAtPosition(newIdx+""+newJdx,board)==null))
                 path.add(newIdx+""+newJdx);
                 else{
-                    if((pm.GetPieceAtPosition(newIdx+""+newJdx,board).getPlayer()!=player)){
+                    if((pm.getPieceAtPosition(newIdx+""+newJdx,board).getPlayer()!=player)){
                         path.add(newIdx+""+newJdx);
                     }
                 }

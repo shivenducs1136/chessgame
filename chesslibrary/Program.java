@@ -17,8 +17,8 @@ class Program{
         List<String> expectedMoves = null;
         do{
             printBoard(chessEngine);
-            if(chessEngine.IsGameEnded()){
-                System.out.println("Game is ended and It is " + chessEngine.GetCurrentGameState());
+            if(chessEngine.isGameEnded()){
+                System.out.println("Game is ended and It is " + chessEngine.getCurrentGameState());
                 return;
             }
             String position;
@@ -27,7 +27,7 @@ class Program{
                 System.out.println("Enter position of piece to move without any space -");
                 position   = sc.nextLine();
                 System.out.println("Expected Moves of piece at: "+position);
-                expectedMoves = chessEngine.GetExpectedMoves(position);
+                expectedMoves = chessEngine.getExpectedMoves(position);
                 printList(expectedMoves);
             }while(expectedMoves == null || expectedMoves.isEmpty() );
             String newPosition= "";
@@ -37,7 +37,7 @@ class Program{
                 }
                 System.out.println("Enter new position where you want to move piece");
                 newPosition = sc.nextLine();
-            }while (!chessEngine.MovePiece(position, newPosition));
+            }while (!chessEngine.movePiece(position, newPosition));
 
         }while(Objects.equals("0", "0"));
     }
@@ -65,25 +65,25 @@ class Program{
         for(int i = 0; i< 8; i++){
             System.out.print(i+1 + " ");
             for(int j= 0; j<8; j++){
-                Piece piece = chessEngine.GetPieceFromBoard(i,j)  ;
+                Piece piece = chessEngine.getPieceFromBoard(i,j)  ;
                 if(piece != null){
                     if(piece instanceof Rook r){
-                        System.out.print( GetWorB(r.getPlayer()) +"Rook" +chessEngine.GetPiecePosition(piece).toUpperCase()+"   ");
+                        System.out.print( GetWorB(r.getPlayer()) +"Rook" +chessEngine.getPiecePosition(piece).toUpperCase()+"   ");
                     }
                     else if(piece instanceof Bishop r){
-                        System.out.print(  GetWorB(r.getPlayer()) +"Bishop" +chessEngine.GetPiecePosition(piece).toUpperCase()+" ");
+                        System.out.print(  GetWorB(r.getPlayer()) +"Bishop" +chessEngine.getPiecePosition(piece).toUpperCase()+" ");
                     }
                     else if(piece instanceof Knight r){
-                        System.out.print( GetWorB(r.getPlayer()) +"Knight" +chessEngine.GetPiecePosition(piece).toUpperCase()+" ");
+                        System.out.print( GetWorB(r.getPlayer()) +"Knight" +chessEngine.getPiecePosition(piece).toUpperCase()+" ");
                     }
                     else if(piece instanceof King r){
-                        System.out.print( GetWorB(r.getPlayer()) +"King" +chessEngine.GetPiecePosition(piece).toUpperCase()+"   ");
+                        System.out.print( GetWorB(r.getPlayer()) +"King" +chessEngine.getPiecePosition(piece).toUpperCase()+"   ");
                     }
                     else if(piece instanceof Queen r){
-                        System.out.print(  GetWorB(r.getPlayer()) +"Queen" +chessEngine.GetPiecePosition(piece).toUpperCase()+"  ");
+                        System.out.print(  GetWorB(r.getPlayer()) +"Queen" +chessEngine.getPiecePosition(piece).toUpperCase()+"  ");
                     }
                     else if(piece instanceof Pawn r){
-                        System.out.print(  GetWorB(r.getPlayer()) +"Pawn" +chessEngine.GetPiecePosition(piece).toUpperCase()+"   ");
+                        System.out.print(  GetWorB(r.getPlayer()) +"Pawn" +chessEngine.getPiecePosition(piece).toUpperCase()+"   ");
                     }
                 }
                 else{
@@ -92,8 +92,8 @@ class Program{
             }
             System.out.println();
         }
-        System.out.println("Current Chance    - " + chessEngine.GetCurrentPlayer());
-        System.out.println("Current EngineState - " + chessEngine.GetCurrentGameState());
+        System.out.println("Current Chance    - " + chessEngine.getCurrentPlayer());
+        System.out.println("Current EngineState - " + chessEngine.getCurrentGameState());
     }
     private static String GetWorB(PlayerEnum playerEnum){
         if(playerEnum == PlayerEnum.White){

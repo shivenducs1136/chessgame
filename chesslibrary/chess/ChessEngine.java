@@ -17,36 +17,36 @@ public class ChessEngine {
         game = new ChessGame(c);
     }
 
-    public List<String> GetExpectedMoves(String algebraicNotation){
-        if(IsGameEnded()) return new ArrayList<>();
-        String position = converter.GetCoordinatesFromAlgebraicNotation(algebraicNotation);
+    public List<String> getExpectedMoves(String algebraicNotation){
+        if(isGameEnded()) return new ArrayList<>();
+        String position = converter.getCoordinatesFromAlgebraicNotation(algebraicNotation);
         if(position.length()>1){
-            List<String> movesInCoordinate = game.GetExpectedMove(position);
-            return converter.GetAlgebraicNotationFromCoordinates(movesInCoordinate);
+            List<String> movesInCoordinate = game.getExpectedMove(position);
+            return converter.getAlgebraicNotationFromCoordinates(movesInCoordinate);
         }
         return new ArrayList<>();
     }
 
-    public boolean MovePiece(String oldAlgebraicPosition,String newAlgebraicPosition){
-        if(IsGameEnded()) return false;
-        String oldPosition =converter.GetCoordinatesFromAlgebraicNotation(oldAlgebraicPosition);
-        String newPosition = converter.GetCoordinatesFromAlgebraicNotation(newAlgebraicPosition);
-        return game.Move(oldPosition,newPosition);
+    public boolean movePiece(String oldAlgebraicPosition,String newAlgebraicPosition){
+        if(isGameEnded()) return false;
+        String oldPosition =converter.getCoordinatesFromAlgebraicNotation(oldAlgebraicPosition);
+        String newPosition = converter.getCoordinatesFromAlgebraicNotation(newAlgebraicPosition);
+        return game.move(oldPosition,newPosition);
     }
-    public GameStateEnum GetCurrentGameState(){
+    public GameStateEnum getCurrentGameState(){
         return game.currentGameState;
     }
-    public PlayerEnum GetCurrentPlayer(){
+    public PlayerEnum getCurrentPlayer(){
         return game.getPlayer();
     }
-    public Piece GetPieceFromBoard(int i,int j){
-        return game.GetPieceOnBoard(i,j);
+    public Piece getPieceFromBoard(int i,int j){
+        return game.getPieceOnBoard(i,j);
     }
-    public String GetPiecePosition(Piece p){
-        return converter.GetAlgebraicNotationFromCoordinates(p.getPosition());
+    public String getPiecePosition(Piece p){
+        return converter.getAlgebraicNotationFromCoordinates(p.getPosition());
     }
-    public boolean IsGameEnded(){
-        GameStateEnum g =GetCurrentGameState();
+    public boolean isGameEnded(){
+        GameStateEnum g =getCurrentGameState();
         return (g == GameStateEnum.StaleMate || g == GameStateEnum.WonByBlack || g == GameStateEnum.WonByWhite);
     }
 }

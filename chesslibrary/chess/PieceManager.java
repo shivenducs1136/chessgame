@@ -11,26 +11,26 @@ import java.util.*;
 public class PieceManager {
     private static final List<Piece> whitePieces = new ArrayList<>();
     private static final List<Piece> blackPieces = new ArrayList<>();
-    public Piece GetPieceAtPosition(String position,List<List<Piece>> board){
+    public Piece getPieceAtPosition(String position,List<List<Piece>> board){
         int i = position.charAt(0) - '0'; 
         int j = position.charAt(1) - '0'; 
         if(i<0 || i>7) return null; 
         if(j<0 || j>7) return null;
         return board.get(i).get(j);
     }
-    public int GetIindex(String position){
+    public int getIindex(String position){
         return position.charAt(0) - '0';
     }
-    public int GetJindex(String position){
+    public int getJindex(String position){
         return position.charAt(1) - '0';
     }
-    public boolean IsPositionEmptyInBoard(int i,int j,List<List<Piece>> board){
+    public boolean isPositionEmptyInBoard(int i,int j,List<List<Piece>> board){
         return board.get(i).get(j) == null;
     }
-    public boolean IsIndexSafe(int i, int j){
+    public boolean isIndexSafe(int i, int j){
         return i >= 0 && i < 8 && j >= 0 && j < 8;
     }
-    public void SeggregatePiece(Piece pc){
+    public void seggregatePiece(Piece pc){
         if(pc.getPlayer() == PlayerEnum.White){
             whitePieces.add(pc);
         }
@@ -38,12 +38,12 @@ public class PieceManager {
             blackPieces.add(pc);
             }
     }
-    public void SeggregatePiece(List<Piece> pcs){
+    public void seggregatePiece(List<Piece> pcs){
         for (Piece pc : pcs) {
-           SeggregatePiece(pc);
+           seggregatePiece(pc);
         }
     }
-    public List<Piece> GetPlayerPieces(PlayerEnum playerColor){
+    public List<Piece> getPlayerPieces(PlayerEnum playerColor){
         if(playerColor == PlayerEnum.White){
             return whitePieces;
         }
@@ -52,8 +52,8 @@ public class PieceManager {
         }
         return null;
     }
-    public void RestrictPiecesOnCheck(PlayerEnum playerColor) {
-        List<Piece> pieces = GetPlayerPieces(playerColor);
+    public void restrictPiecesOnCheck(PlayerEnum playerColor) {
+        List<Piece> pieces = getPlayerPieces(playerColor);
         for(Piece piece:pieces){
             if(!(piece instanceof King)){
                 piece.setCanMove(false);
@@ -61,16 +61,16 @@ public class PieceManager {
         }
 
     }
-    public List<String> GetPointsCommonInBothKing(List<List<Piece>> board){
-        King whiteKing = GetKing(whitePieces);
-        King blackKing = GetKing(blackPieces);
-        List<String> whiteKingMoves = whiteKing.GetAllValidMoves(this,board);
-        List<String> blackKingMoves = blackKing.GetAllValidMoves(this,board);
+    public List<String> getPointsCommonInBothKing(List<List<Piece>> board){
+        King whiteKing = getKing(whitePieces);
+        King blackKing = getKing(blackPieces);
+        List<String> whiteKingMoves = whiteKing.getAllValidMoves(this,board);
+        List<String> blackKingMoves = blackKing.getAllValidMoves(this,board);
         Set<String> commonMoves = new HashSet<>(whiteKingMoves);
         commonMoves.retainAll(blackKingMoves);
         return new ArrayList<>(commonMoves);
     }
-    public King GetKing(List<Piece> pieces){
+    public King getKing(List<Piece> pieces){
         for(Piece p:pieces){
             if (p instanceof King){
                 return (King)p;
@@ -78,17 +78,17 @@ public class PieceManager {
         }
         return null;
     }
-    public PlayerEnum GetOppositePlayerColor(PlayerEnum playerEnum){
+    public PlayerEnum getOppositePlayerColor(PlayerEnum playerEnum){
         if(playerEnum == PlayerEnum.Black){
             return PlayerEnum.White;
         }
         return PlayerEnum.Black;
     }
-    public boolean AllowPiecesThatCanResolveCheck(List<String> checkPiecePath,PlayerEnum playerColor, ChessGame cg) {
-        List<Piece> pieces = GetPlayerPieces(playerColor);
+    public boolean allowPiecesThatCanResolveCheck(List<String> checkPiecePath,PlayerEnum playerColor, ChessGame cg) {
+        List<Piece> pieces = getPlayerPieces(playerColor);
         boolean allowed = false;
         for(Piece p:pieces){
-            List<List<String>> expectedPaths = p.ExpectedPaths(cg.GetBoard());
+            List<List<String>> expectedPaths = p.expectedPaths(cg.getBoard());
             for (List<String> path:expectedPaths){
                 for(String move:path){
                     if(checkPiecePath.contains(move)){
@@ -100,10 +100,10 @@ public class PieceManager {
         }
        return allowed;
     }
-    public boolean IsPlayerHaveAnyLegalMove(PlayerEnum playerChance,ChessGame cg) {
-        List<Piece> pieces = GetPlayerPieces(playerChance);
+    public boolean isPlayerHaveAnyLegalMove(PlayerEnum playerChance,ChessGame cg) {
+        List<Piece> pieces = getPlayerPieces(playerChance);
         for (Piece p:pieces){
-            List<List<String>> expectedPaths = p.ExpectedPaths(cg.GetBoard());
+            List<List<String>> expectedPaths = p.expectedPaths(cg.getBoard());
             for (List<String> path:expectedPaths){
                 if(!path.isEmpty()){
                     return true;
@@ -112,8 +112,8 @@ public class PieceManager {
         }
         return false;
     }
-    public void AllowAllPiecesToMove(PlayerEnum playerChance) {
-        List<Piece> pieces = GetPlayerPieces(playerChance);
+    public void allowAllPiecesToMove(PlayerEnum playerChance) {
+        List<Piece> pieces = getPlayerPieces(playerChance);
         for(Piece piece:pieces){
             if(!(piece instanceof King)){
                 piece.setCanMove(true);
@@ -121,18 +121,18 @@ public class PieceManager {
         }
     }
 
-    public List<String> IsCheck(PlayerEnum playerColor,String currentKingPosition,List<List<Piece>> board){
-        List<Piece> oppositePlayerPieces = GetPlayerPieces(GetOppositePlayerColor(playerColor));
+    public List<String> isCheck(PlayerEnum playerColor,String currentKingPosition,List<List<Piece>> board){
+        List<Piece> oppositePlayerPieces = getPlayerPieces(getOppositePlayerColor(playerColor));
         List<String> checkPiecePath = new ArrayList<>();
         for (Piece oppPlayerPiece : oppositePlayerPieces) {
             if(oppPlayerPiece instanceof King k){
-                List<String> commonPoints = GetPointsCommonInBothKing(board);
+                List<String> commonPoints = getPointsCommonInBothKing(board);
                 if(commonPoints.contains(currentKingPosition)){
                     checkPiecePath.add(currentKingPosition);
                 }
             }
             else{
-                List<List<String>> playerMoves = oppPlayerPiece.ExpectedPaths(board);
+                List<List<String>> playerMoves = oppPlayerPiece.expectedPaths(board);
                 for(List<String> path:playerMoves){
                     if(path.contains(currentKingPosition)){
                         checkPiecePath = path;
@@ -144,20 +144,20 @@ public class PieceManager {
         }
         return null;
     }
-    public List<String> IsCheck(PlayerEnum playerColor,List<List<Piece>> board){
-        String currentKingPosition = GetKing(GetPlayerPieces(playerColor)).getPosition();
-        return IsCheck(playerColor,currentKingPosition,board);
+    public List<String> isCheck(PlayerEnum playerColor,List<List<Piece>> board){
+        String currentKingPosition = getKing(getPlayerPieces(playerColor)).getPosition();
+        return isCheck(playerColor,currentKingPosition,board);
     }
-    public void CreatePieces(List<List<Piece>> board) {
+    public void createPieces(List<List<Piece>> board) {
         // white pieces
         List<Piece> whitePieces = getWhitePieces();
-        SeggregatePiece(whitePieces);
+        seggregatePiece(whitePieces);
         board.add(whitePieces);
         List<Piece> whitePawns = new ArrayList<>();
         for(int i = 0; i<8 ; i++){
             whitePawns.add(new Pawn(PlayerEnum.White, "1"+i));
         }
-        SeggregatePiece(whitePawns);
+        seggregatePiece(whitePawns);
         board.add(whitePawns);
         // empty pieces
         for(int j = 2; j<6 ; j++){
@@ -173,13 +173,13 @@ public class PieceManager {
         for(int i = 0; i<8 ; i++){
             blackPawns.add(new Pawn(PlayerEnum.Black, "6"+i));
         }
-        SeggregatePiece(blackPawns);
+        seggregatePiece(blackPawns);
         board.add(blackPawns);
 
         // Black pieces
         List<Piece> blackPieces = getBlackPieceList();
         board.add(blackPieces);
-        SeggregatePiece(blackPieces);
+        seggregatePiece(blackPieces);
     }
     private static List<Piece> getBlackPieceList() {
         Piece blackRook1 = new Rook(PlayerEnum.Black, "70");
@@ -222,11 +222,11 @@ public class PieceManager {
         return whitePieces;
     }
 
-    public void RemoveKilledPiece(Piece p) {
-        List<Piece> pieces = GetPlayerPieces(p.getPlayer());
+    public void removeKilledPiece(Piece p) {
+        List<Piece> pieces = getPlayerPieces(p.getPlayer());
         pieces.remove(p);
     }
-    public List<List<Piece>> GetBoardClone(List<List<Piece>> board) {
+    public List<List<Piece>> getBoardClone(List<List<Piece>> board) {
         List<List<Piece>> newBoard = new ArrayList<>();
         for(List<Piece> row:board){
             List<Piece> list = new ArrayList<>();

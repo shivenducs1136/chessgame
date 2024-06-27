@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class UserChess implements ChessCallback {
     @Override
-    public PieceEnum GetSelectedPieceForPawnUpgrade() {
+    public PieceEnum getSelectedPieceForPawnUpgrade() {
         System.out.println("Enter piece name in small letter to upgrade \n queen, rook, bishop, knight");
         Scanner sc = new Scanner(System.in);
         String input = sc.nextLine();
