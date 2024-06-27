@@ -19,8 +19,8 @@ public class Rook extends Piece{
         isKilled =false;
         canMove = true; }
     
-    public List<List<String>> expectedPaths(List<List<Piece>> board){
-        PieceManager pm = new PieceManager();
+    public List<List<String>> expectedPaths(PieceManager pieceManager){
+        this.pieceManager =pieceManager;
         List<List<String>> moves = new ArrayList<>();
         int[] iIndexes = new int[]{-1,1,0,0};
         int[] jIndexes = new int[]{0,0,-1,1};
@@ -29,7 +29,7 @@ public class Rook extends Piece{
         // keeping i constant and  decreasing j  -> 0,-1
         // keeping i constant and  increasing j  -> 0,1
         for(int x = 0; x<4;x++){
-            moves.add(getValidMovesInDirection(pm,iIndexes[x],jIndexes[x],board));
+            moves.add(getValidMovesInDirection(iIndexes[x],jIndexes[x]));
         }
         return moves;
     }

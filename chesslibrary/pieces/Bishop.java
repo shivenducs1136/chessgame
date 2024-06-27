@@ -18,9 +18,9 @@ public class Bishop extends Piece{
         player = playerEnum;
         this.position = position;
     }
-    public List<List<String>> expectedPaths(List<List<Piece>> board){
+    public List<List<String>> expectedPaths(PieceManager pieceManager){
+        this.pieceManager =pieceManager;
         List<List<String>> moves =  new ArrayList<>();
-        PieceManager pm = new PieceManager();
         int[] iIndexes = new int[]{-1,1,1,-1};
         int[] jIndexes = new int[]{-1,1,-1,1};
         // decreasing i and decreasing j -> -1,-1
@@ -28,7 +28,7 @@ public class Bishop extends Piece{
         // increasing i and decreasing j -> 1,-1
         // decreasing i and increasing j -> -1,1
         for(int x = 0; x<4;x++){
-            moves.add(getValidMovesInDirection(pm,iIndexes[x],jIndexes[x],board));
+            moves.add(getValidMovesInDirection(iIndexes[x],jIndexes[x]));
         }
         return moves;
     }

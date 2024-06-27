@@ -20,11 +20,11 @@ public class Pawn extends Piece{
          canMove = true;
     }
     
-    public List<List<String>> expectedPaths(List<List<Piece>> board){
-       List<List<String>> moves = new ArrayList<>();
-       PieceManager pm = new PieceManager(); 
-       int i = pm.getIindex(position);
-       int j = pm.getJindex(position);
+    public List<List<String>> expectedPaths(PieceManager pieceManager){
+        this.pieceManager =pieceManager;
+        List<List<String>> moves = new ArrayList<>();
+       int i = converter.getIindex(position);
+       int j = converter.getJindex(position);
         List<String> pathForward = new ArrayList<>();
         List<String> pathDiag = new ArrayList<>();
         int idx = i;
@@ -35,7 +35,7 @@ public class Pawn extends Piece{
             int count = 0;
                 while(count<2){
                     idx++; 
-                    if(pm.isPositionEmptyInBoard(idx, j,board)){
+                    if(pieceManager.isPositionEmptyInBoard(idx, j)){
                         pathForward.add(idx+""+j);
                     }
                     else{
@@ -46,7 +46,7 @@ public class Pawn extends Piece{
         }
         else{
             idx++;
-            if(pm.isPositionEmptyInBoard(idx,j,board)){
+            if(pieceManager.isPositionEmptyInBoard(idx,j)){
                 pathForward.add(idx+""+j);
             }
         }
@@ -54,8 +54,8 @@ public class Pawn extends Piece{
             int di = i+1; 
             int dj2 = j+1; 
             
-            Piece piece1 = pm.getPieceAtPosition(di+""+dj1,board);
-            Piece piece2 = pm.getPieceAtPosition(di+""+dj2,board);
+            Piece piece1 = pieceManager.getPieceAtPosition(di,dj1);
+            Piece piece2 = pieceManager.getPieceAtPosition(di,dj2);
             if(dj1>=0 && dj1<8){
                 if( piece1 != null && piece1.getPlayer()!=player){
                     pathDiag.add(di+""+dj1);
@@ -67,13 +67,13 @@ public class Pawn extends Piece{
                 }
             }
             for(String s:pathForward){
-                int newI = pm.getIindex(s);
+                int newI = converter.getIindex(s);
                 if(newI == 7){
                     upgradableMoves.add(s);
                 }
             }
             for(String s:pathDiag){
-                int newI = pm.getIindex(s);
+                int newI = converter.getIindex(s);
                 if(newI == 7){
                     upgradableMoves.add(s);
                 }
@@ -87,7 +87,7 @@ public class Pawn extends Piece{
             int count = 0; 
             while(count<2){
                 idx--; 
-                if(pm.isPositionEmptyInBoard(idx, j,board)){
+                if(pieceManager.isPositionEmptyInBoard(idx, j)){
                     pathForward.add(idx+""+j);
                 }
                 else{
@@ -98,7 +98,7 @@ public class Pawn extends Piece{
         }
         else{
             idx--; 
-            if(pm.isPositionEmptyInBoard(idx,j,board)){
+            if(pieceManager.isPositionEmptyInBoard(idx,j)){
                 pathForward.add(idx+""+j);
             }
            
@@ -107,8 +107,8 @@ public class Pawn extends Piece{
         int dj1 = j-1;
         int di = i-1; 
         int dj2 = j+1; 
-        Piece piece1 = pm.getPieceAtPosition(di+""+dj1,board);
-        Piece piece2 = pm.getPieceAtPosition(di+""+dj2,board);
+        Piece piece1 = pieceManager.getPieceAtPosition(di,dj1);
+        Piece piece2 = pieceManager.getPieceAtPosition(di,dj2);
         if(dj1>=0 && dj1<8){
             if( piece1 != null && piece1.getPlayer()!=player){
                 pathDiag.add(di+""+dj1);
@@ -122,13 +122,13 @@ public class Pawn extends Piece{
         moves.add(pathForward);
         moves.add(pathDiag);
             for(String s:pathForward){
-                int newI = pm.getIindex(s);
+                int newI = converter.getIindex(s);
                 if(newI == 0){
                     upgradableMoves.add(s);
                 }
             }
             for(String s:pathDiag){
-                int newI = pm.getIindex(s);
+                int newI = converter.getIindex(s);
                 if(newI == 0){
                     upgradableMoves.add(s);
                 }
