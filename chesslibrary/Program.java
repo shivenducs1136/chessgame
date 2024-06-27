@@ -17,6 +17,10 @@ class Program{
         List<String> expectedMoves = null;
         do{
             printBoard(chessEngine);
+            if(chessEngine.IsGameEnded()){
+                System.out.println("Game is ended and It is " + chessEngine.GetCurrentGameState());
+                return;
+            }
             String position;
             String changePiece;
             do{
@@ -25,16 +29,16 @@ class Program{
                 System.out.println("Expected Moves of piece at: "+position);
                 expectedMoves = chessEngine.GetExpectedMoves(position);
                 printList(expectedMoves);
-//                System.out.println("Enter 0 to change piece Or Enter anything else to continue");
-//                changePiece = sc.nextLine();
             }while(expectedMoves == null || expectedMoves.isEmpty() );
+            String newPosition= "";
+            do{
+                if(!newPosition.isEmpty()){
+                        System.out.println("Entered position is invalid, Please enter from the Expected Move list.");
+                }
+                System.out.println("Enter new position where you want to move piece");
+                newPosition = sc.nextLine();
+            }while (!chessEngine.MovePiece(position, newPosition));
 
-            System.out.println("Enter new position where you want to move piece");
-            String newPosition = sc.nextLine();
-            chessEngine.MovePiece(position,newPosition);
-            printBoard(chessEngine);
-//            System.out.println("To continue press any key or press 0 to exit.");
-//            idx = sc.nextLine();
         }while(Objects.equals("0", "0"));
     }
 

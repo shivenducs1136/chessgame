@@ -18,6 +18,7 @@ public class ChessEngine {
     }
 
     public List<String> GetExpectedMoves(String algebraicNotation){
+        if(IsGameEnded()) return new ArrayList<>();
         String position = converter.GetCoordinatesFromAlgebraicNotation(algebraicNotation);
         if(position.length()>1){
             List<String> movesInCoordinate = game.GetExpectedMove(position);
@@ -26,10 +27,11 @@ public class ChessEngine {
         return new ArrayList<>();
     }
 
-    public void MovePiece(String oldAlgebraicPosition,String newAlgebraicPosition){
+    public boolean MovePiece(String oldAlgebraicPosition,String newAlgebraicPosition){
+        if(IsGameEnded()) return false;
         String oldPosition =converter.GetCoordinatesFromAlgebraicNotation(oldAlgebraicPosition);
         String newPosition = converter.GetCoordinatesFromAlgebraicNotation(newAlgebraicPosition);
-        game.Move(oldPosition,newPosition);
+        return game.Move(oldPosition,newPosition);
     }
     public GameStateEnum GetCurrentGameState(){
         return game.currentGameState;
@@ -42,5 +44,9 @@ public class ChessEngine {
     }
     public String GetPiecePosition(Piece p){
         return converter.GetAlgebraicNotationFromCoordinates(p.getPosition());
+    }
+    public boolean IsGameEnded(){
+        GameStateEnum g =GetCurrentGameState();
+        return (g == GameStateEnum.StaleMate || g == GameStateEnum.WonByBlack || g == GameStateEnum.WonByWhite);
     }
 }

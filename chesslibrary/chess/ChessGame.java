@@ -74,14 +74,35 @@ public class ChessGame {
         return false;
     }
 
-    public void Move(String oldPosition, String newPosition){
+    public boolean Move(String oldPosition, String newPosition){
         Piece currentPiece = pieceManager.GetPieceAtPosition(oldPosition,board);
+        boolean isMovePerformed =  false;
         if(currentPiece.getPlayer() == playerChance){
-            PerformMove(currentPiece,newPosition,board);
-            setCurrentGameState(GameStateEnum.Running);
-            SwitchChance();
-            UpdateGameState();
+            isMovePerformed = PerformMove(currentPiece,newPosition,board);
+            if(isMovePerformed){
+                setCurrentGameState(GameStateEnum.Running);
+                SwitchChance();
+                UpdateGameState();
+                if(currentGameState == GameStateEnum.WonByBlack ||
+                        currentGameState == GameStateEnum.WonByWhite ||
+                        currentGameState == GameStateEnum.StaleMate )   {
+                    EndGame();
+                }
+            }
         }
+        return isMovePerformed;
+    }
+
+    private void EndGame() {
+        List<Piece> whitePieces = pieceManager.GetPlayerPieces(PlayerEnum.White);
+        for(Piece p:whitePieces){
+            p.setCanMove(false);
+        }
+        List<Piece> blackPieces = pieceManager.GetPlayerPieces(PlayerEnum.Black);
+        for(Piece p:blackPieces){
+            p.setCanMove(false);
+        }
+        playerChance = PlayerEnum.None;
     }
 
     public Piece GetPieceOnBoard(int i,int j){
@@ -127,7 +148,7 @@ public class ChessGame {
         }
         return null;
     }
-    private void PerformMove(Piece currentPiece,String newPosition,List<List<Piece>> board) {
+    private boolean PerformMove(Piece currentPiece,String newPosition,List<List<Piece>> board) {
         String oldPosition = currentPiece.getPosition();
         var moves = GetExpectedMove(oldPosition);
         if(moves.contains(newPosition)){
@@ -153,7 +174,9 @@ public class ChessGame {
                 currentPiece.setPosition(newPosition);
             }
             currentPiece.setFirstMoveToFalse();
+            return true;
         }
+        return false;
     }
 
 

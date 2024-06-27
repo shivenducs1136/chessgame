@@ -1,5 +1,6 @@
 package enums;
 public enum PlayerEnum {
     White,
-    Black
+    Black,
+    None
 }
