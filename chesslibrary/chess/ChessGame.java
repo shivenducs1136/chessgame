@@ -12,6 +12,8 @@ import pieces.Pawn;
 import pieces.Queen;
 import pieces.Rook;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,11 @@ public class ChessGame {
     private final PieceManager pieceManager;
     private final ChessCallback chessCallback;
     private final PositionToIndexConverter converter;
+    /*
+     * Parameters:
+     * chessCallBack: An object of a class defined by user implementing ChessCallback interface
+     * Returns:
+     * */
     public ChessGame(ChessCallback c){
         chessCallback = c;
         pieceManager = new PieceManager(board);
@@ -32,13 +39,12 @@ public class ChessGame {
         converter = new PositionToIndexConverter();
         setCurrentGameState(GameStateEnum.Initialized);
     }
-    public ChessGame(ChessCallback c, List<List<Piece>> boardState){
-        chessCallback = c;
-        board = boardState;
-        pieceManager = new PieceManager(board);
-        converter = new PositionToIndexConverter();
-        setCurrentGameState(GameStateEnum.Initialized);
-    }
+    /*
+     * Parameters:
+     * position: Piece location based on "ij" format where i is row index starting from 0 and
+     *           j is column index starting from 0.
+     * Returns: List of moves possible for current piece to move, or empty list.
+     * */
     public List<String> getExpectedMove(String position){
         List<String> moves = null;
         Piece currentPiece = pieceManager.getPieceAtPosition(position);
@@ -62,29 +68,28 @@ public class ChessGame {
                         moves.addAll(mvs);
                     }
                 }
+                List<String> updatedMoveList = new ArrayList<>();
                 for(String mv:moves){
-                    if (isMoveCausingCheck(currentPiece,mv)){
-                        moves.remove(mv);
+                    if (!isMoveCausingCheck(currentPiece,mv)){
+                        updatedMoveList.add(mv);
                     }
                 }
-                return moves;
+                return updatedMoveList;
             }
         }
         return new ArrayList<>();
     }
-
-    private boolean isMoveCausingCheck(Piece currentPiece,String mv) {
-//        var newBoard = pieceManager.getBoardClone();
-//        pieceManager.setPieceInBoard(currentPiece.getPosition(),null);
-//        pieceManager.setPieceInBoard(mv,currentPiece);
-        return false;
-    }
-
+    /*
+     * Parameters:
+     * oldPosition: The current location of the piece in internal chess notation (e.g., "01" equivalent to "g1").
+     * newPosition: The target location for the piece in standard chess notation (e.g., "00" equivalent to "h1").
+     * Returns: A boolean value indicating whether the move is valid and successfully executed (true) or invalid (false).
+     */
     public boolean move(String oldPosition, String newPosition){
         Piece currentPiece = pieceManager.getPieceAtPosition(oldPosition);
         boolean isMovePerformed =  false;
         if(currentPiece.getPlayer() == playerChance){
-            isMovePerformed = performMove(currentPiece,newPosition,board);
+            isMovePerformed = performMove(currentPiece,newPosition);
             if(isMovePerformed){
                 setCurrentGameState(GameStateEnum.Running);
                 switchChance();
@@ -99,6 +104,59 @@ public class ChessGame {
         return isMovePerformed;
     }
 
+    /*
+     * Parameters:
+     * i: The row index of the board, starting from 0.
+     * j: The column index of the board, starting from 0.
+     * Returns: The Piece object located at the specified position on the board, or null if no piece is present.
+     */
+    public Piece getPieceOnBoard(int i,int j){
+        return pieceManager.getPieceAtPosition(i,j);
+    }
+
+    /*
+     * Parameters:
+     * position: The location of the piece in standard chess notation (e.g., "01" equivalent to "g1").
+     * Returns: The Piece object located at the specified position on the board, or null if no piece is present.
+     */
+    public Piece getPieceOnBoard(String position){
+        return pieceManager.getPieceAtPosition(position);
+    }
+    /*
+     * Parameters:
+     * currentGameState: The current state of the game, represented by a value from the GameStateEnum enumeration.
+     * Returns: void. This method does not return a value.
+     */
+    public void setCurrentGameState(GameStateEnum currentGameState) {
+        this.currentGameState = currentGameState;
+    }
+    /*
+     * Parameters:
+     * Returns: The PlayerEnum value representing the player whose turn it is to move.
+     */
+    public PlayerEnum getPlayer() {
+        return playerChance;
+    }
+
+    private boolean isMoveCausingCheck(Piece currentPiece,String mv) {
+        var newBoard = pieceManager.getBoardClone();
+        boolean isCheck = false;
+        Class<?> c = null;
+        try {
+            c = Class.forName(String.valueOf(currentPiece.getClass().getName()));
+            Constructor<?> cons = c.getConstructor(PlayerEnum.class,String.class);
+            Object object = cons.newInstance(new Object[]{currentPiece.getPlayer(),mv});
+            Piece piece = (Piece) object;
+            PieceManager pm = new PieceManager(newBoard);
+            pm.setPieceInBoard(currentPiece.getPosition(),null);
+            pm.setPieceInBoard(mv,piece);
+            pm.updatePieceList();
+            isCheck = pm.isCheck(piece.getPlayer()) != null;
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e)  {
+            e.printStackTrace();
+        }
+        return isCheck;
+    }
     private void endGame() {
         List<Piece> whitePieces = pieceManager.getPlayerPieces(PlayerEnum.White);
         for(Piece p:whitePieces){
@@ -110,22 +168,11 @@ public class ChessGame {
         }
         playerChance = PlayerEnum.None;
     }
-
-    public Piece getPieceOnBoard(int i,int j){
-        return board.get(i).get(j);
-    }
-    public void setCurrentGameState(GameStateEnum currentGameState) {
-        this.currentGameState = currentGameState;
-    }
-    public PlayerEnum getPlayer() {
-        return playerChance;
-    }
-
     private List<String> getCastleMovesIfPossible(Piece piece) {
         King k = (King)piece;
         if(currentGameState == GameStateEnum.Check)
             return new ArrayList<>();
-        return k.getCastleMovesIfPossible(board);
+        return k.getCastleMovesIfPossible();
     }
     private Piece upgradePawn(String oldPosition, PieceEnum upgradePawnTo){
         if(upgradePawnTo.canUpgradeByPawn){
@@ -152,7 +199,7 @@ public class ChessGame {
         }
         return null;
     }
-    private boolean performMove(Piece currentPiece,String newPosition,List<List<Piece>> board) {
+    private boolean performMove(Piece currentPiece,String newPosition) {
         String oldPosition = currentPiece.getPosition();
         var moves = getExpectedMove(oldPosition);
         if(moves.contains(newPosition)){
@@ -161,7 +208,7 @@ public class ChessGame {
                 p.setIsKilled(true);
                 pieceManager.removePiece(p);
             }
-            if((currentPiece instanceof King k) && k.getCastleMovesIfPossible(board).contains(newPosition) && currentGameState!=GameStateEnum.Check){
+            if((currentPiece instanceof King k) && k.getCastleMovesIfPossible().contains(newPosition) && currentGameState!=GameStateEnum.Check){
                 performCastleMove(k,newPosition);
             }
             else{
@@ -183,8 +230,6 @@ public class ChessGame {
         }
         return false;
     }
-
-
     private void performCastleMove(King k,String newPosition) {
         int j = converter.getJindex(newPosition);
         if(j == 1){
@@ -226,7 +271,7 @@ public class ChessGame {
         else{
             currentGameState = GameStateEnum.Running;
             pieceManager.allowAllPiecesToMove(playerChance);
-            if(!pieceManager.isPlayerHaveAnyLegalMove(playerChance,this)){
+            if(!pieceManager.isPlayerHaveAnyLegalMove(playerChance)){
                 currentGameState = GameStateEnum.StaleMate;
             }
         }
@@ -239,11 +284,7 @@ public class ChessGame {
             playerChance = PlayerEnum.White;
         }
     }
-
-    public List<List<Piece>> getBoard() {
-            return board;
-    }
-    public void initializeBoard() {
+    private void initializeBoard() {
         // white pieces
         List<Piece> whitePieces = getWhitePieces();
         board.add(whitePieces);
@@ -311,48 +352,4 @@ public class ChessGame {
         return whitePieces;
     }
 
-/*
-    Below code is used for testing purpose.
-    public void CreateSampleChessBoard(){
-        board.clear();
-        for(int i =0; i<8;i++){
-            List<Piece> pc = new ArrayList<>(); 
-            for(int j = 0; j< 8; j++){
-                pc.add(null); 
-            }
-            board.add(pc);
-        }
-    }
-
-    public void AddSamplePieceToBoard(Piece pc){
-        int i = pieceManager.getIindex(pc.getPosition());
-        int j = pieceManager.getJindex(pc.getPosition()); 
-        pieceManager.SeggregatePiece(pc);
-        board.get(i).set(j, pc); 
-    }
-
-    public boolean SampleMove(String oldPosition, String newPosition){
-        Piece currentPiece = pieceManager.GetPieceAtPosition(oldPosition);
-
-            var moves = getExpectedMove(oldPosition);
-            if(moves.contains(newPosition)){
-                Piece p = pieceManager.GetPieceAtPosition(newPosition);
-                if(p!=null){
-                    p.setIsKilled(true);
-                }
-                board.get(pieceManager.getIindex(newPosition)).set(pieceManager.getJindex(newPosition), currentPiece);
-                board.get(pieceManager.getIindex(oldPosition)).set(pieceManager.getJindex(oldPosition), null);
-                currentPiece.setPosition(newPosition);
-                if(currentPiece instanceof Pawn pw){
-                    pw.FirstMoveDone();
-                }
-                setCurrentGameState(GameStateEnum.Running);
-                UpdateGameState();
-                SwitchChance();
-                return true;
-            }
-            return false;
-    }
-*/
-   
 }
