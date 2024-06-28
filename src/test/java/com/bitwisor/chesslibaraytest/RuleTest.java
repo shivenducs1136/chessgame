@@ -1,11 +1,9 @@
-package com.bitwisor;
+package com.bitwisor.chesslibaraytest;
 
 
 import com.bitiwsor.chessgame.abstracts.ChessCallback;
 import com.bitiwsor.chessgame.abstracts.Piece;
-import com.bitiwsor.chessgame.chess.Board;
 import com.bitiwsor.chessgame.chess.ChessEngine;
-import com.bitiwsor.chessgame.chess.ChessGame;
 import com.bitiwsor.chessgame.enums.ColorEnum;
 import com.bitiwsor.chessgame.enums.GameStateEnum;
 import com.bitiwsor.chessgame.enums.PieceEnum;
