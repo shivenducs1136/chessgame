@@ -1,4 +1,4 @@
-package com.bitwisor.chesslibaraytest;
+package com.bitwisor.chessgametest;
 
 
 import com.bitiwsor.chessgame.abstracts.ChessCallback;
