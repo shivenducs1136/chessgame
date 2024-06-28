@@ -3,8 +3,8 @@ package chess;
 import abstracts.ChessCallback;
 import abstracts.Piece;
 import enums.GameStateEnum;
-import enums.PlayerEnum;
-import io.AlgebraicNotationConverter;
+import enums.ColorEnum;
+import io.converters.AlgebraicNotationConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,10 @@ public class ChessEngine {
     public ChessEngine(ChessCallback c){
         converter = new AlgebraicNotationConverter();
         game = new ChessGame(c);
+    }
+    public ChessEngine(ChessCallback c,List<List<Piece>> board,ColorEnum currentPlayerChance){
+        converter = new AlgebraicNotationConverter();
+        game = new ChessGame(c,board,currentPlayerChance);
     }
     /*
     * Parameters:
@@ -56,7 +60,7 @@ public class ChessEngine {
      *          Black when the current chance is of Black player,
      *          None when game is over
      * */
-    public PlayerEnum getCurrentPlayer(){
+    public ColorEnum getCurrentPlayer(){
         return game.getPlayer();
     }
     /*
@@ -96,8 +100,19 @@ public class ChessEngine {
      * Parameters:
      * Returns: true if game if finished i.e. Either Stalemate or WonByWhite or WonByBlack
      * */
-    public boolean isGameEnded(){
+     public boolean isGameEnded(){
         GameStateEnum g =getCurrentGameState();
         return (g == GameStateEnum.StaleMate || g == GameStateEnum.WonByBlack || g == GameStateEnum.WonByWhite);
+    }
+    /*
+     * Resigns the game for the player whose turn it is.
+     * Params:
+     *   playerChance - The ColorEnum representing the player who is currently taking their turn.
+     */
+    public void resignGame(ColorEnum playerColor){
+        game.resignGame(playerColor);
+    }
+    public List<Piece> getKilledPieces(){
+        return game.getKilledPieces();
     }
 }
