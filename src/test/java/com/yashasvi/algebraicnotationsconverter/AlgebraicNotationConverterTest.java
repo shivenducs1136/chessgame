@@ -33,8 +33,8 @@ import java.util.List;
             expected = Arrays.asList("07", "", "70");
             assertEquals(expected, converter.getCoordinatesFromAlgebraicNotation(input));
 
-            input = Arrays.asList();
-            expected = Arrays.asList();
+            input = List.of();
+            expected = List.of();
             assertEquals(expected, converter.getCoordinatesFromAlgebraicNotation(input));
         }
 
