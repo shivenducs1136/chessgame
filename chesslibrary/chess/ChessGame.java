@@ -3,14 +3,9 @@ package chess;
 import abstracts.*;
 import enums.GameStateEnum;
 import enums.PieceEnum;
-import enums.PlayerEnum;
+import enums.ColorEnum;
 import io.PositionToIndexConverter;
-import pieces.Bishop;
-import pieces.King;
-import pieces.Knight;
-import pieces.Pawn;
-import pieces.Queen;
-import pieces.Rook;
+import pieces.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -19,11 +14,10 @@ import java.util.stream.Collectors;
 
 public class ChessGame {
     
-    private List<List<Piece>> board = new ArrayList<>();
-    private PlayerEnum playerChance = PlayerEnum.White; 
+    private ColorEnum playerChance = ColorEnum.White;
     public GameStateEnum currentGameState;
     private List<String> checkPiecePath = null;
-    private final PieceManager pieceManager;
+    private Board board;
     private final ChessCallback chessCallback;
     private final PositionToIndexConverter converter;
     /*
@@ -33,9 +27,7 @@ public class ChessGame {
      * */
     public ChessGame(ChessCallback c){
         chessCallback = c;
-        pieceManager = new PieceManager(board);
-        initializeBoard();
-        pieceManager.updatePieceList();
+        board = new Board();
         converter = new PositionToIndexConverter();
         setCurrentGameState(GameStateEnum.Initialized);
     }
@@ -47,13 +39,13 @@ public class ChessGame {
      * */
     public List<String> getExpectedMove(String position){
         List<String> moves = null;
-        Piece currentPiece = pieceManager.getPieceAtPosition(position);
+        Piece currentPiece = board.getPieceAtPosition(position);
         if(currentPiece == null) return new ArrayList<>();
-        if(playerChance == currentPiece.getPlayer()){
+        if(playerChance == currentPiece.getPlayerColor()){
             if(currentPiece.getCanMove()){
-                moves = currentPiece.expectedPaths(pieceManager).
+                moves = RuleFactory.getRule(board,currentPiece).expectedPaths().
                         stream().flatMap(Collection::stream).collect(Collectors.toList());;
-                if(currentGameState == GameStateEnum.Check && !(currentPiece instanceof King)){
+                if(currentGameState == GameStateEnum.Check && currentPiece.getPieceType()!=PieceEnum.King){
                     List<String> updatedMoves = new ArrayList<>();
                     for(String mv:moves){
                         if(checkPiecePath.contains(mv)){
@@ -62,7 +54,7 @@ public class ChessGame {
                     }
                     moves = updatedMoves;
                 }
-                if(currentPiece instanceof King){
+                if(currentPiece.getPieceType() == PieceEnum.King){
                     var mvs=getCastleMovesIfPossible(currentPiece);
                     if(!mvs.isEmpty()){
                         moves.addAll(mvs);
@@ -86,9 +78,9 @@ public class ChessGame {
      * Returns: A boolean value indicating whether the move is valid and successfully executed (true) or invalid (false).
      */
     public boolean move(String oldPosition, String newPosition){
-        Piece currentPiece = pieceManager.getPieceAtPosition(oldPosition);
+        Piece currentPiece = board.getPieceAtPosition(oldPosition);
         boolean isMovePerformed =  false;
-        if(currentPiece.getPlayer() == playerChance){
+        if(currentPiece.getPlayerColor() == playerChance){
             isMovePerformed = performMove(currentPiece,newPosition);
             if(isMovePerformed){
                 setCurrentGameState(GameStateEnum.Running);
@@ -110,8 +102,8 @@ public class ChessGame {
      * j: The column index of the board, starting from 0.
      * Returns: The Piece object located at the specified position on the board, or null if no piece is present.
      */
-    public Piece getPieceOnBoard(int i,int j){
-        return pieceManager.getPieceAtPosition(i,j);
+    public Piece getPieceOnBoard(int i, int j){
+        return board.getPieceAtPosition(i,j);
     }
 
     /*
@@ -120,109 +112,94 @@ public class ChessGame {
      * Returns: The Piece object located at the specified position on the board, or null if no piece is present.
      */
     public Piece getPieceOnBoard(String position){
-        return pieceManager.getPieceAtPosition(position);
+        return board.getPieceAtPosition(position);
     }
     /*
      * Parameters:
      * currentGameState: The current state of the game, represented by a value from the GameStateEnum enumeration.
      * Returns: void. This method does not return a value.
      */
-    public void setCurrentGameState(GameStateEnum currentGameState) {
+    private void setCurrentGameState(GameStateEnum currentGameState) {
         this.currentGameState = currentGameState;
     }
     /*
      * Parameters:
      * Returns: The PlayerEnum value representing the player whose turn it is to move.
      */
-    public PlayerEnum getPlayer() {
+    public ColorEnum getPlayer() {
         return playerChance;
     }
 
-    private boolean isMoveCausingCheck(Piece currentPiece,String mv) {
-        var newBoard = pieceManager.getBoardClone();
+    private boolean isMoveCausingCheck(Piece currentPiece, String mv) {
+        Board newBoard = board.getClone();
         boolean isCheck = false;
         Class<?> c = null;
         try {
             c = Class.forName(String.valueOf(currentPiece.getClass().getName()));
-            Constructor<?> cons = c.getConstructor(PlayerEnum.class,String.class);
-            Object object = cons.newInstance(new Object[]{currentPiece.getPlayer(),mv});
+            Constructor<?> cons = c.getConstructor(PieceEnum.class,ColorEnum.class,String.class);
+            Object object = cons.newInstance(new Object[]{currentPiece.getPieceType(),currentPiece.getPlayerColor(),mv});
             Piece piece = (Piece) object;
-            PieceManager pm = new PieceManager(newBoard);
-            pm.setPieceInBoard(currentPiece.getPosition(),null);
-            pm.setPieceInBoard(mv,piece);
-            pm.updatePieceList();
-            isCheck = pm.isCheck(piece.getPlayer()) != null;
+            newBoard.put(currentPiece.getPosition(),null);
+            newBoard.put(mv,piece);
+            newBoard.updatePieceList();
+            isCheck = ((CheckRule)RuleFactory.getRule(newBoard,board.getKing(playerChance), CheckRule.class)).isCheck(piece.getPlayerColor()) != null;
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e)  {
             e.printStackTrace();
         }
         return isCheck;
     }
     private void endGame() {
-        List<Piece> whitePieces = pieceManager.getPlayerPieces(PlayerEnum.White);
+        List<Piece> whitePieces = board.getPlayerPieces(ColorEnum.White);
         for(Piece p:whitePieces){
             p.setCanMove(false);
         }
-        List<Piece> blackPieces = pieceManager.getPlayerPieces(PlayerEnum.Black);
+        List<Piece> blackPieces = board.getPlayerPieces(ColorEnum.Black);
         for(Piece p:blackPieces){
             p.setCanMove(false);
         }
-        playerChance = PlayerEnum.None;
+        playerChance = ColorEnum.None;
     }
-    private List<String> getCastleMovesIfPossible(Piece piece) {
-        King k = (King)piece;
+    private List<String> getCastleMovesIfPossible(Piece kingPiece) {
         if(currentGameState == GameStateEnum.Check)
             return new ArrayList<>();
-        return k.getCastleMovesIfPossible();
+        KingRule rule = (KingRule) RuleFactory.getRule(board,kingPiece);
+        return rule.getCastleMovesIfPossible();
     }
     private Piece upgradePawn(String oldPosition, PieceEnum upgradePawnTo){
         if(upgradePawnTo.canUpgradeByPawn){
-            Piece newPiece;
-            switch (upgradePawnTo){
-                case Rook ->{
-                    newPiece = new Rook(playerChance,oldPosition);
-                    break;
-                }
-                case Bishop -> {
-                    newPiece = new Bishop(playerChance,oldPosition);
-                    break;
-                }
-                case Knight -> {
-                    newPiece = new Knight(playerChance,oldPosition);
-                    break;
-                }
-                default -> {
-                    newPiece = new Queen(playerChance,oldPosition);
-                    break;
-                }
-            }
+            Piece newPiece = new ChessPiece(upgradePawnTo,playerChance,oldPosition);
             return newPiece;
         }
         return null;
     }
-    private boolean performMove(Piece currentPiece,String newPosition) {
+    private boolean performMove(Piece currentPiece, String newPosition) {
         String oldPosition = currentPiece.getPosition();
         var moves = getExpectedMove(oldPosition);
         if(moves.contains(newPosition)){
-            Piece p = pieceManager.getPieceAtPosition(newPosition);
+            Piece p = board.getPieceAtPosition(newPosition);
             if(p!=null){
                 p.setIsKilled(true);
-                pieceManager.removePiece(p);
+                board.clear(p);
             }
-            if((currentPiece instanceof King k) && k.getCastleMovesIfPossible().contains(newPosition) && currentGameState!=GameStateEnum.Check){
-                performCastleMove(k,newPosition);
+            if((currentPiece.getPieceType() == PieceEnum.King) &&
+                    ((KingRule)RuleFactory.getRule(board,currentPiece)).getCastleMovesIfPossible().contains(newPosition) &&
+                    currentGameState!=GameStateEnum.Check){
+                performCastleMove(currentPiece,newPosition);
             }
             else{
-                if((currentPiece instanceof Pawn pwn) && !pwn.upgradableMoves.isEmpty()){
+                if((currentPiece.getPieceType()== PieceEnum.Pawn) &&
+                        ((PawnUpgradeRule)RuleFactory.getRule(board,currentPiece, PawnUpgradeRule.class)).isPawnUpgradable(newPosition)){
+
                     PieceEnum pieceEnum = chessCallback.getSelectedPieceForPawnUpgrade();
                     Piece pp = upgradePawn(oldPosition,pieceEnum);
                     if(pp !=null){
-                        pieceManager.removePiece(currentPiece);
+                        board.clear(currentPiece);
                         currentPiece = pp;
-                        pieceManager.seggregatePiece(currentPiece);
+                        board.seggregatePiece(currentPiece);
                     }
                 }
-                pieceManager.setPieceInBoard(newPosition,currentPiece);
-                pieceManager.setPieceInBoard(oldPosition,null);
+                board.put(newPosition,currentPiece);
+                board.put(oldPosition,null);
                 currentPiece.setPosition(newPosition);
             }
             currentPiece.setFirstMoveToFalse();
@@ -230,37 +207,37 @@ public class ChessGame {
         }
         return false;
     }
-    private void performCastleMove(King k,String newPosition) {
+    private void performCastleMove(Piece kingPiece, String newPosition) {
         int j = converter.getJindex(newPosition);
         if(j == 1){
             //LeftCastle
-            pieceManager.setPieceInBoard(newPosition,k);
-            pieceManager.setPieceInBoard(k.getPosition(),null);
-            k.setPosition(newPosition);
-            Rook r = (Rook) pieceManager.getPieceAtPosition(converter.getIindex(k.getPosition())+"0");
-            pieceManager.setPieceInBoard(converter.getIindex(k.getPosition())+"2",r);
-            pieceManager.setPieceInBoard(converter.getIindex(r.getPosition())+"0",null);
-            r.setPosition(converter.getIindex(k.getPosition())+"2");
+            board.put(newPosition,kingPiece);
+            board.put(kingPiece.getPosition(),null);
+            kingPiece.setPosition(newPosition);
+            Piece rook =  board.getPieceAtPosition(converter.getIindex(kingPiece.getPosition())+"0");
+            board.put(converter.getIindex(kingPiece.getPosition())+"2",rook);
+            board.put(converter.getIindex(rook.getPosition())+"0",null);
+            rook.setPosition(converter.getIindex(kingPiece.getPosition())+"2");
         }
         else{
             //Right Castle
-            pieceManager.setPieceInBoard(newPosition,k);
-            pieceManager.setPieceInBoard(k.getPosition(),null);
-            k.setPosition(newPosition);
-            Rook r = (Rook) pieceManager.getPieceAtPosition(converter.getIindex(k.getPosition())+"0");
-            pieceManager.setPieceInBoard(converter.getIindex(k.getPosition())+"4",r);
-            pieceManager.setPieceInBoard(converter.getIindex(r.getPosition())+"7",null);
-            r.setPosition(converter.getIindex(k.getPosition())+"4");
+            board.put(newPosition,kingPiece);
+            board.put(kingPiece.getPosition(),null);
+            kingPiece.setPosition(newPosition);
+            Piece rook =  board.getPieceAtPosition(converter.getIindex(kingPiece.getPosition())+"7");
+            board.put(converter.getIindex(kingPiece.getPosition())+"4",rook);
+            board.put(converter.getIindex(rook.getPosition())+"7",null);
+            rook.setPosition(converter.getIindex(kingPiece.getPosition())+"4");
         }
     }
     private void updateGameState() {
-        checkPiecePath = pieceManager.isCheck(playerChance);
+        checkPiecePath = ((CheckRule)RuleFactory.getRule(board,board.getKing(playerChance), CheckRule.class)).isCheck(playerChance);
         if(checkPiecePath!=null){
             currentGameState = GameStateEnum.Check;
-            pieceManager.restrictPiecesOnCheck(playerChance);
-            boolean isAllowedAny = pieceManager.allowPiecesThatCanResolveCheck(checkPiecePath,playerChance,this);
-            if(!isAllowedAny && getExpectedMove(pieceManager.getKing(playerChance).getPosition()).isEmpty()){
-                if(pieceManager.getOppositePlayerColor(playerChance) == PlayerEnum.White){
+            restrictPiecesOnCheck(playerChance);
+            boolean isAllowedAny = board.allowPiecesThatCanResolveCheck(checkPiecePath,playerChance,this);
+            if(!isAllowedAny && getExpectedMove(board.getKing(playerChance).getPosition()).isEmpty()){
+                if(board.getOppositePlayerColor(playerChance) == ColorEnum.White){
                     currentGameState = GameStateEnum.WonByWhite;
                 }
                 else{
@@ -270,86 +247,36 @@ public class ChessGame {
         }
         else{
             currentGameState = GameStateEnum.Running;
-            pieceManager.allowAllPiecesToMove(playerChance);
-            if(!pieceManager.isPlayerHaveAnyLegalMove(playerChance)){
+            board.allowAllPiecesToMove(playerChance);
+            if(!board.isPlayerHaveAnyLegalMove(playerChance)){
                 currentGameState = GameStateEnum.StaleMate;
             }
         }
     }
     private void switchChance(){
-        if(playerChance == PlayerEnum.White){
-            playerChance = PlayerEnum.Black; 
+        if(playerChance == ColorEnum.White){
+            playerChance = ColorEnum.Black;
         }
         else{
-            playerChance = PlayerEnum.White;
+            playerChance = ColorEnum.White;
         }
     }
-    private void initializeBoard() {
-        // white pieces
-        List<Piece> whitePieces = getWhitePieces();
-        board.add(whitePieces);
-        List<Piece> whitePawns = new ArrayList<>();
-        for(int i = 0; i<8 ; i++){
-            whitePawns.add(new Pawn(PlayerEnum.White, "1"+i));
-        }
-        board.add(whitePawns);
-        // empty pieces
-        for(int j = 2; j<6 ; j++){
-            List<Piece> emptyPlaces = new ArrayList<>();
-            for(int i = 0 ; i< 8; i++){
-                emptyPlaces.add(null);
+
+    /*
+     * Parameters:
+     * playerColor: The color of the player (PlayerEnum) whose pieces are to be restricted due to a check condition.
+     * Returns: void. This method does not return a value.
+     */
+    private void restrictPiecesOnCheck(ColorEnum playerColor) {
+        List<Piece> pieces = board.getPlayerPieces(playerColor);
+        for(Piece piece:pieces){
+            if(!(piece.getPieceType() == PieceEnum.King)){
+                piece.setCanMove(false);
             }
-            board.add(emptyPlaces);
         }
-        // black pawn pieces
-        List<Piece> blackPawns = new ArrayList<>();
-        for(int i = 0; i<8 ; i++){
-            blackPawns.add(new Pawn(PlayerEnum.Black, "6"+i));
-        }
-        board.add(blackPawns);
-        // Black pieces
-        List<Piece> blackPieces = getBlackPieceList();
-        board.add(blackPieces);
+
     }
-    private List<Piece> getBlackPieceList() {
-        Piece blackRook1 = new Rook(PlayerEnum.Black, "70");
-        Piece blackRook2 = new Rook(PlayerEnum.Black, "77");
-        Piece blackKnight1 = new Knight(PlayerEnum.Black, "71");
-        Piece blackKnight2 = new Knight(PlayerEnum.Black, "76");
-        Piece blackBishop1 = new Bishop(PlayerEnum.Black, "72");
-        Piece blackBishop2 = new Bishop(PlayerEnum.Black, "75");
-        Piece blackKing = new King(PlayerEnum.Black, "73");
-        Piece blackQueen = new Queen(PlayerEnum.Black, "74");
-        List<Piece> blackPieces = new ArrayList<>();
-        blackPieces.add(blackRook1);
-        blackPieces.add(blackKnight1);
-        blackPieces.add(blackBishop1);
-        blackPieces.add(blackKing);
-        blackPieces.add(blackQueen);
-        blackPieces.add(blackBishop2);
-        blackPieces.add(blackKnight2);
-        blackPieces.add(blackRook2);
-        return blackPieces;
-    }
-    private List<Piece> getWhitePieces() {
-        Piece whiteRook1 = new Rook(PlayerEnum.White, "00");
-        Piece whiteRook2 = new Rook(PlayerEnum.White, "07");
-        Piece whiteKnight1 = new Knight(PlayerEnum.White, "01");
-        Piece whiteKnight2 = new Knight(PlayerEnum.White, "06");
-        Piece whiteBishop1 = new Bishop(PlayerEnum.White, "02");
-        Piece whiteBishop2 = new Bishop(PlayerEnum.White, "05");
-        Piece whiteKing = new King(PlayerEnum.White, "03");
-        Piece whiteQueen = new Queen(PlayerEnum.White, "04");
-        List<Piece> whitePieces = new ArrayList<>();
-        whitePieces.add(whiteRook1);
-        whitePieces.add(whiteKnight1);
-        whitePieces.add(whiteBishop1);
-        whitePieces.add(whiteKing);
-        whitePieces.add(whiteQueen);
-        whitePieces.add(whiteBishop2);
-        whitePieces.add(whiteKnight2);
-        whitePieces.add(whiteRook2);
-        return whitePieces;
-    }
+
+
 
 }

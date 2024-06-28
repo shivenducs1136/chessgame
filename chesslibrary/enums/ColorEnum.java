@@ -1,5 +1,5 @@
 package enums;
-public enum PlayerEnum {
+public enum ColorEnum {
     White,
     Black,
     None

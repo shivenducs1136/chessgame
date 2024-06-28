@@ -1,100 +1,89 @@
 package abstracts; 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import chess.PieceManager;
+import enums.ColorEnum;
 import enums.PieceEnum;
-import enums.PlayerEnum;
-import io.PositionToIndexConverter;
 
 public abstract class Piece {
-    protected PlayerEnum player;
+    protected ColorEnum playerColor;
     protected boolean isKilled;
     protected boolean canMove;
     protected String position = "";
     protected boolean isFirstMove = true;
-    protected final PositionToIndexConverter converter;
-    protected PieceManager pieceManager;
-    protected Piece(){
-        converter = new PositionToIndexConverter();
+    protected PieceEnum pieceType;
+
+    protected Piece(PieceEnum pieceType,ColorEnum colorEnum,String position){
+        this.playerColor = colorEnum;
+        this.position = position;
+        this.isKilled = false;
+        this.canMove = true;
+        this.pieceType = pieceType;
     }
     /*
-     * Parameters:
-     * pieceManager: The PieceManager object responsible for managing the pieces on the board.
-     * Returns: A two-dimensional list of strings representing the expected paths for the current piece.
+     * Retrieves the current movable state of the Bishop.
+     * Returns: true if the Bishop can move, false otherwise.
      */
-    abstract public List<List<String>> expectedPaths(PieceManager pieceManager);
-    /*
-     * Returns: The PlayerEnum value representing the player to which the piece belongs.
-     */
-    abstract public PlayerEnum getPlayer();
-    /*
-     * Returns: A boolean value indicating whether the piece has been killed (true) or not (false).
-     */
-    abstract public boolean isKilled();
-    /*
-     * Returns: The current position of the piece in internal chess notation (e.g., "01" means "g1").
-     */
-    abstract public String getPosition();
-    /*
-     * Parameters:
-     * isKilled: A boolean value indicating whether the piece is to be marked as killed (true) or not (false).
-     * Returns: void. This method does not return a value.
-     */
-    abstract public void setIsKilled(boolean isKilled);
-    /*
-     * Parameters:
-     * canMove: A boolean value indicating whether the piece is allowed to move (true) or not (false).
-     * Returns: void. This method does not return a value.
-     */
-    abstract public void setCanMove(boolean canMove);
-    /*
-     * Returns: A boolean value indicating whether the piece is allowed to move (true) or not (false).
-     */
-    abstract public boolean getCanMove();
-    /*
-     * Parameters:
-     * newPosition: The new position of the piece in standard chess notation (e.g., "e4").
-     * Returns: void. This method does not return a value.
-     */
-    abstract public void setPosition(String newPosition);
-    /*
-     * Parameters:
-     * i_direction: The row direction in which to check for valid moves.
-     * j_direction: The column direction in which to check for valid moves.
-     * Returns: A list of strings representing the valid moves in the specified direction.
-     */
-    protected List<String> getValidMovesInDirection(int i_direction,int j_direction){
-        List<String> moves = new ArrayList<>();
-        int idx = converter.getIindex(position);
-        int jdx = converter.getJindex(position);
-        int i = idx + i_direction;
-        int j = jdx + j_direction;
-        while(
-                (converter.isIndexSafe(i,j) && (pieceManager.getPieceAtPosition(i,j) == null)) ||
-                        converter.isIndexSafe(i,j) && (pieceManager.getPieceAtPosition(i,j).getPlayer() != player)
-        ){
+    public boolean getCanMove() {
+        return canMove;
+    }
 
-            moves.add(i+""+j);
-            if(pieceManager.getPieceAtPosition(i,j) != null){
-                break;
-            }
-            i+=i_direction;
-            j+=j_direction;
+    /*
+     * Retrieves the current position of the Bishop.
+     * Returns: The position of the Bishop in algebraic notation (e.g., "e2").
+     */
+    public String getPosition() {
+        return position;
+    }
 
-        }
-        return moves;
+    /*
+     * Updates the movable state of the Bishop.
+     * Parameters:
+     * canMove: true to allow the Bishop to move, false to restrict movement.
+     */
+    public void setCanMove(boolean canMove) {
+        this.canMove = canMove;
+    }
+
+    /*
+     * Updates the position of the Bishop on the chessboard.
+     * Parameters:
+     * position: The new position of the Bishop in algebraic notation (e.g., "e2").
+     */
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    /*
+     * Retrieves the player (PlayerEnum) to which the Bishop belongs.
+     * Returns: The PlayerEnum value representing the player of the Bishop (White or Black).
+     */
+    public ColorEnum getPlayerColor() {
+        return playerColor;
+    }
+
+    /*
+     * Checks if the Bishop has been killed (captured).
+     * Returns: true if the Bishop has been killed, false otherwise.
+     */
+    public boolean getIsKilled() {
+        return isKilled;
     }
     /*
-     * Returns: void. This method does not return a value.
-     * Description: Sets the piece's first move flag to false, indicating that it has moved at least once.
+     * Updates the killed state of the Bishop.
+     * Parameters:
+     * isKilled: true if the Bishop is killed (captured), false otherwise.
      */
+    public void setIsKilled(boolean isKilled) {
+        this.isKilled = isKilled;
+    }
     public void setFirstMoveToFalse(){
         this.isFirstMove = false;
     }
-    /*
-     * Returns: A boolean value indicating whether the piece is making its first move (true) or not (false).
-     */
-    public boolean isFirstMove(){return isFirstMove;}
+
+    public boolean isFirstMove() {
+        return isFirstMove;
+    }
+
+    public PieceEnum getPieceType() {
+        return this.pieceType;
+    }
 }

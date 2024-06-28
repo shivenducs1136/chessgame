@@ -1,22 +1,32 @@
 import abstracts.Piece;
 import chess.ChessEngine;
-import chess.ChessEngine;
-import enums.PlayerEnum;
-import pieces.Bishop;
-import pieces.King;
-import pieces.Knight;
-import pieces.Pawn;
-import pieces.Queen;
-import pieces.Rook;
+import enums.ColorEnum;
+import pieces.BishopRule;
+import pieces.KingRule;
+import pieces.KnightRule;
+import pieces.PawnRule;
+import pieces.QueenRule;
+import pieces.RookRule;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;;
 class Program{
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ChessEngine chessEngine = new ChessEngine(new UserChess());
         Scanner sc = new Scanner(System.in);
         String idx;
         List<String> expectedMoves = null;
+        File myObj = new File("moves.txt");
+        boolean b = false;
         do{
             printBoard(chessEngine);
+
             if(chessEngine.isGameEnded()){
                 System.out.println("Game is ended and It is " + chessEngine.getCurrentGameState());
                 return;
@@ -26,9 +36,20 @@ class Program{
             do{
                 System.out.println("Enter position of piece to move without any space -");
                 position   = sc.nextLine();
+                if(!b){
+                    if (myObj.exists()) {
+                        myObj.delete();
+                    }
+                    myObj.createNewFile();
+                    b = true;
+                }
                 System.out.println("Expected Moves of piece at: "+position);
                 expectedMoves = chessEngine.getExpectedMoves(position);
-                printList(expectedMoves);
+                try {
+                    printList(expectedMoves);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }while(expectedMoves == null || expectedMoves.isEmpty() );
             String newPosition= "";
             do{
@@ -39,16 +60,20 @@ class Program{
                 newPosition = sc.nextLine();
             }while (!chessEngine.movePiece(position, newPosition));
 
+            Files.write(Paths.get("moves.txt"), position.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get("moves.txt"), System.lineSeparator().getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get("moves.txt"), newPosition.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get("moves.txt"), System.lineSeparator().getBytes(), StandardOpenOption.APPEND);
+
         }while(Objects.equals("0", "0"));
     }
 
-    private static void printList(List<String> list){
+    private static void printList(List<String> list) throws Exception {
         if(list == null){
-            System.out.println("Piece can't move Enter any other piece");
-            return;
+            throw new Exception("Piece can't move Enter piece to move");
         }
         if(list.isEmpty()){
-            System.out.println("Piece can't move Enter any other piece");
+            throw new Exception("Piece can't move Enter piece to move");
         }
         for (String str : list) {
             System.out.println(str);
@@ -67,24 +92,7 @@ class Program{
             for(int j= 0; j<8; j++){
                 Piece piece = chessEngine.getPieceFromBoard(i,j)  ;
                 if(piece != null){
-                    if(piece instanceof Rook r){
-                        System.out.print( GetWorB(r.getPlayer()) +"Rook" +chessEngine.getPiecePosition(piece).toUpperCase()+"   ");
-                    }
-                    else if(piece instanceof Bishop r){
-                        System.out.print(  GetWorB(r.getPlayer()) +"Bishop" +chessEngine.getPiecePosition(piece).toUpperCase()+" ");
-                    }
-                    else if(piece instanceof Knight r){
-                        System.out.print( GetWorB(r.getPlayer()) +"Knight" +chessEngine.getPiecePosition(piece).toUpperCase()+" ");
-                    }
-                    else if(piece instanceof King r){
-                        System.out.print( GetWorB(r.getPlayer()) +"King" +chessEngine.getPiecePosition(piece).toUpperCase()+"   ");
-                    }
-                    else if(piece instanceof Queen r){
-                        System.out.print(  GetWorB(r.getPlayer()) +"Queen" +chessEngine.getPiecePosition(piece).toUpperCase()+"  ");
-                    }
-                    else if(piece instanceof Pawn r){
-                        System.out.print(  GetWorB(r.getPlayer()) +"Pawn" +chessEngine.getPiecePosition(piece).toUpperCase()+"   ");
-                    }
+                        System.out.print( GetWorB(piece.getPlayerColor()) +piece.getPieceType() +chessEngine.getPiecePosition(piece).toUpperCase()+"   ");
                 }
                 else{
                     System.out.print ("    -     ");
@@ -95,8 +103,8 @@ class Program{
         System.out.println("Current Chance    - " + chessEngine.getCurrentPlayer());
         System.out.println("Current EngineState - " + chessEngine.getCurrentGameState());
     }
-    private static String GetWorB(PlayerEnum playerEnum){
-        if(playerEnum == PlayerEnum.White){
+    private static String GetWorB(ColorEnum colorEnum){
+        if(colorEnum == ColorEnum.White){
             return "W";
         }
         return "B";

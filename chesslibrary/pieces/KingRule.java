@@ -2,18 +2,19 @@ package pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import abstracts.*;
+import chess.Board;
 import chess.ChessGame;
-import chess.PieceManager;
+import chess.ChessPiece;
+import chess.RuleFactory;
+import enums.ColorEnum;
 import enums.PieceEnum;
-import enums.PlayerEnum;
 
 /*
  * Represents a King piece in a chess game, extending from the Piece class.
  */
-public class King extends Piece {
+public class KingRule extends Rule {
     private List<String> possibleCastleMoves = null;
 
     /*
@@ -22,11 +23,8 @@ public class King extends Piece {
      * playerEnum: The player (PlayerEnum) to which the King belongs (White or Black).
      * position: The initial position of the King in algebraic notation (e.g., "e1").
      */
-    public King(PlayerEnum playerEnum, String position) {
-        player = playerEnum;
-        this.position = position;
-        isKilled = false;
-        canMove = true;
+    public KingRule(Board board, Piece piece) {
+        super(board,piece);
     }
 
     /*
@@ -35,12 +33,16 @@ public class King extends Piece {
      * pieceManager: The PieceManager object managing all pieces on the board.
      * Returns: A list of lists of strings representing valid move paths in algebraic notation for the King.
      */
-    public List<List<String>> expectedPaths(PieceManager pieceManager) {
-        this.pieceManager = pieceManager;
+    public List<List<String>> expectedPaths() {
         List<List<String>> moves = new ArrayList<>();
-        List<String> updatedMoves = removePathsThatCanHarmKing(getAllValidMoves(pieceManager));
+        List<String> updatedMoves = removePathsThatCanHarmKing(getAllValidMoves());
         moves.add(updatedMoves);
         return moves;
+    }
+
+    @Override
+    public PieceEnum pieceType() {
+        return PieceEnum.King;
     }
 
     /*
@@ -66,37 +68,38 @@ public class King extends Piece {
      * Returns: true if the King would not be in check at the expected position, false otherwise.
      */
     private boolean checkIfExpectedPositionValid(String expectedPosition) {
-        List<List<Piece>> newBoard = pieceManager.getBoardClone();
-        int i = converter.getIindex(position);
-        int j = converter.getJindex(position);
-        PieceManager newPm = new PieceManager(newBoard);
-        newPm.setPieceInBoard(i, j, null);
-        newPm.setPieceInBoard(expectedPosition, new King(player, expectedPosition));
-        newPm.updatePieceList();
-        return newPm.isCheck(player, expectedPosition) == null;
+        Board newBoard = board.getClone();
+        int i = converter.getIindex(piece.getPosition());
+        int j = converter.getJindex(piece.getPosition());
+        newBoard.put(i, j, null);
+        Piece pc = new ChessPiece(PieceEnum.King,piece.getPlayerColor(),expectedPosition);
+        if(newBoard.getPieceAtPosition(expectedPosition)!=null){
+            newBoard.clear(newBoard.getPieceAtPosition(expectedPosition));
+        }
+        newBoard.put(expectedPosition, pc);
+        return ((CheckRule)RuleFactory.getRule(newBoard,pc, CheckRule.class)).isCheck(pc.getPlayerColor(),expectedPosition) == null;
     }
-
     /*
      * Retrieves all valid moves for the King based on its current position.
      * Parameters:
      * pieceManager: The PieceManager object managing all pieces on the board.
      * Returns: A list of strings representing all valid move positions in algebraic notation for the King.
      */
-    public List<String> getAllValidMoves(PieceManager pieceManager) {
+    public List<String> getAllValidMoves() {
         List<String> moves = new ArrayList<>();
         int[] iIndexs = new int[] { 1, 1, -1, 0, 1, 0, -1, -1 };
         int[] jIndexs = new int[] { 1, -1, -1, 1, 0, -1, 0, 1 };
-        int idx = converter.getIindex(position);
-        int jdx = converter.getJindex(position);
+        int idx = converter.getIindex(piece.getPosition());
+        int jdx = converter.getJindex(piece.getPosition());
         for (int x = 0; x < 8; x++) {
             int newIdx = idx + iIndexs[x];
             int newJdx = jdx + jIndexs[x];
 
             if (converter.isIndexSafe(newIdx, newJdx)) {
-                if ((pieceManager.getPieceAtPosition(newIdx, newJdx) == null))
+                if ((board.getPieceAtPosition(newIdx, newJdx) == null))
                     moves.add(newIdx + "" + newJdx);
                 else {
-                    if ((pieceManager.getPieceAtPosition(newIdx, newJdx).getPlayer() != player)) {
+                    if ((board.getPieceAtPosition(newIdx, newJdx).getPlayerColor() != piece.getPlayerColor())) {
                         moves.add(newIdx + "" + newJdx);
                     }
                 }
@@ -105,94 +108,21 @@ public class King extends Piece {
         return moves;
     }
 
-    /*
-     * Retrieves the current movable state of the King.
-     * Returns: true if the King can move, false otherwise.
-     */
-    public boolean getCanMove() {
-        return canMove;
-    }
-
-    /*
-     * Retrieves the current position of the King.
-     * Returns: The position of the King in algebraic notation (e.g., "e1").
-     */
-    public String getPosition() {
-        return position;
-    }
-
-    /*
-     * Updates the position of the King on the chessboard.
-     * Parameters:
-     * position: The new position of the King in algebraic notation (e.g., "e1").
-     */
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    /*
-     * Updates the movable state of the King.
-     * Parameters:
-     * canMove: true to allow the King to move, false to restrict movement.
-     */
-    public void setCanMove(boolean canMove) {
-        this.canMove = canMove;
-    }
-
-    /*
-     * Retrieves the player (PlayerEnum) to which the King belongs.
-     * Returns: The PlayerEnum value representing the player of the King (White or Black).
-     */
-    public PlayerEnum getPlayer() {
-        return player;
-    }
-
-    /*
-     * Checks if the King has been killed (captured).
-     * Returns: true if the King has been killed, false otherwise.
-     */
-    public boolean isKilled() {
-        return isKilled;
-    }
-
-    /*
-     * Updates the killed state of the King.
-     * Parameters:
-     * isKilled: true if the King is killed (captured), false otherwise.
-     */
-    public void setIsKilled(boolean isKilled) {
-        this.isKilled = isKilled;
-    }
-
-    /*
-     * Retrieves the list of castle moves available to the King.
-     * Returns: A list of strings representing the positions for possible castle moves in algebraic notation.
-     */
-    public List<String> getCastleMoves() {
-        return possibleCastleMoves;
-    }
-
-    /*
-     * Determines and retrieves the castle moves available to the King based on the current board state.
-     * Parameters:
-     * board: The current state of the chessboard represented as a list of lists of pieces.
-     * Returns: A list of strings representing the positions for possible castle moves in algebraic notation.
-     */
     public List<String> getCastleMovesIfPossible() {
         List<String> moves = new ArrayList<>();
 
-        if(player == PlayerEnum.Black){
+        if(piece.getPlayerColor() == ColorEnum.Black){
 
             boolean isRook1FirstMove = false;
             boolean isRook2FirstMove = false;
-            boolean isKingFirstMove = isFirstMove;
+            boolean isKingFirstMove = piece.isFirstMove();
 
             // check for roo1 and rook2 first move
             if(isKingFirstMove){
-                List<Piece> pieces = pieceManager.getPlayerPieces(player);
+                List<Piece> pieces = board.getPlayerPieces(piece.getPlayerColor());
                 boolean b = true;
                 for (Piece p:pieces){
-                    if((p instanceof Rook) && p.isFirstMove()){
+                    if((p.getPieceType() == PieceEnum.Rook) && p.isFirstMove()){
                         if(b){
                             isRook1FirstMove = true;
                             b = false;
@@ -204,8 +134,8 @@ public class King extends Piece {
 
                     String position1 = "71";
                     String position2 = "72";
-                    Piece p = pieceManager.getPieceAtPosition(position1);
-                    Piece p2 = pieceManager.getPieceAtPosition(position2);
+                    Piece p = board.getPieceAtPosition(position1);
+                    Piece p2 = board.getPieceAtPosition(position2);
                     if(p == null && p2 == null){
                         if(checkIfExpectedPositionValid(position1) && checkIfExpectedPositionValid(position2)){
                             // Castling is allowed here
@@ -218,9 +148,9 @@ public class King extends Piece {
                     String position1 = "74";
                     String position2 = "75";
                     String position3 = "76";
-                    Piece p = pieceManager.getPieceAtPosition(position1);
-                    Piece p2 = pieceManager.getPieceAtPosition(position2);
-                    Piece p3 = pieceManager.getPieceAtPosition(position3);
+                    Piece p = board.getPieceAtPosition(position1);
+                    Piece p2 = board.getPieceAtPosition(position2);
+                    Piece p3 = board.getPieceAtPosition(position3);
 
                     if(p == null && p2 == null && p3 == null){
                         if(checkIfExpectedPositionValid(position1) && checkIfExpectedPositionValid(position2) ){
@@ -234,15 +164,15 @@ public class King extends Piece {
         else{
             boolean isRook1FirstMove = false;
             boolean isRook2FirstMove = false;
-            boolean isKingFirstMove = isFirstMove;
+            boolean isKingFirstMove = piece.isFirstMove();
 
 
             // check for roo1 and rook2 first move
             if(isKingFirstMove){
-                List<Piece> pieces = pieceManager.getPlayerPieces(player);
+                List<Piece> pieces = board.getPlayerPieces(piece.getPlayerColor());
                 boolean b = true;
                 for (Piece p:pieces){
-                    if((p instanceof Rook) && p.isFirstMove()){
+                    if((p.getPieceType() == PieceEnum.Rook) && p.isFirstMove()){
                         if(b){
                             isRook1FirstMove = true;
                             b = false;
@@ -254,8 +184,8 @@ public class King extends Piece {
 
                     String position1 = "01";
                     String position2 = "02";
-                    Piece p = pieceManager.getPieceAtPosition(position1);
-                    Piece p2 = pieceManager.getPieceAtPosition(position2);
+                    Piece p = board.getPieceAtPosition(position1);
+                    Piece p2 = board.getPieceAtPosition(position2);
                     if(p == null && p2 == null){
                         if(checkIfExpectedPositionValid(position1) && checkIfExpectedPositionValid(position2)){
                             // Castling is allowed here
@@ -268,9 +198,9 @@ public class King extends Piece {
                     String position1 = "04";
                     String position2 = "05";
                     String position3 = "06";
-                    Piece p = pieceManager.getPieceAtPosition(position1);
-                    Piece p2 = pieceManager.getPieceAtPosition(position2);
-                    Piece p3 = pieceManager.getPieceAtPosition(position3);
+                    Piece p = board.getPieceAtPosition(position1);
+                    Piece p2 = board.getPieceAtPosition(position2);
+                    Piece p3 = board.getPieceAtPosition(position3);
 
                     if(p == null && p2 == null && p3 == null){
                         if(checkIfExpectedPositionValid(position1) && checkIfExpectedPositionValid(position2) ){

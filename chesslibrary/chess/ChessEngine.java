@@ -3,7 +3,7 @@ package chess;
 import abstracts.ChessCallback;
 import abstracts.Piece;
 import enums.GameStateEnum;
-import enums.PlayerEnum;
+import enums.ColorEnum;
 import io.AlgebraicNotationConverter;
 
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class ChessEngine {
      *          Black when the current chance is of Black player,
      *          None when game is over
      * */
-    public PlayerEnum getCurrentPlayer(){
+    public ColorEnum getCurrentPlayer(){
         return game.getPlayer();
     }
     /*
