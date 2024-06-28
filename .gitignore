@@ -2,5 +2,5 @@
 out/
 chessgame.iml
 chesslibrary/.cph/
-src/main/com/bitwisor/chesslibrary/Program.java
-src/main/com/bitwisor/chesslibrary/UserChess.java
+src/main/java/com/bitwisor/chesslibrary/Program.java
+src/main/java/com/bitwisor/chesslibrary/UserChess.java
