@@ -1,11 +1,11 @@
-package chess;
+package com.bitiwsor.chessgame.chess;
 
-import abstracts.ChessCallback;
-import abstracts.Piece;
-import enums.GameStateEnum;
-import enums.ColorEnum;
-import io.converters.AlgebraicNotationConverter;
-
+import com.bitiwsor.chessgame.abstracts.ChessCallback;
+import com.bitiwsor.chessgame.abstracts.Piece;
+import com.bitiwsor.chessgame.enums.GameStateEnum;
+import com.bitiwsor.chessgame.enums.ColorEnum;
+import com.bitiwsor.chessgame.exceptions.InvalidMoveException;
+import com.bitiwsor.chessgame.io.converters.AlgebraicNotationConverter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class ChessEngine {
         converter = new AlgebraicNotationConverter();
         game = new ChessGame(c);
     }
-    public ChessEngine(ChessCallback c,List<List<Piece>> board,ColorEnum currentPlayerChance){
+    public ChessEngine(ChessCallback c, List<List<Piece>> board, ColorEnum currentPlayerChance) throws InvalidMoveException {
         converter = new AlgebraicNotationConverter();
         game = new ChessGame(c,board,currentPlayerChance);
     }
@@ -26,14 +26,14 @@ public class ChessEngine {
     * algebraicNotation: Piece location based on standard chess board algebraic notation.
     * Returns: List of moves possible for current piece to move, or empty list.
     * */
-    public List<String> getExpectedMoves(String algebraicNotation){
+    public List<String> getExpectedMoves(String algebraicNotation) throws InvalidMoveException {
         if(isGameEnded()) return new ArrayList<>();
         String position = converter.getCoordinatesFromAlgebraicNotation(algebraicNotation);
         if(position.length()>1){
             List<String> movesInCoordinate = game.getExpectedMove(position);
             return converter.getAlgebraicNotationFromCoordinates(movesInCoordinate);
         }
-        return new ArrayList<>();
+        throw new InvalidMoveException();
     }
     /*
      * Parameters:
@@ -41,7 +41,7 @@ public class ChessEngine {
      * newAlgebraicPosition: Piece location based on standard chess board algebraic notation. Where piece is going to move.
      * Returns: true when movePiece is successful, otherwise false.
      * */
-    public boolean movePiece(String currentAlgebraicPosition,String newAlgebraicPosition){
+    public boolean movePiece(String currentAlgebraicPosition,String newAlgebraicPosition) throws Exception {
         if(isGameEnded()) return false;
         String oldPosition =converter.getCoordinatesFromAlgebraicNotation(currentAlgebraicPosition);
         String newPosition = converter.getCoordinatesFromAlgebraicNotation(newAlgebraicPosition);
@@ -109,10 +109,14 @@ public class ChessEngine {
      * Params:
      *   playerChance - The ColorEnum representing the player who is currently taking their turn.
      */
-    public void resignGame(ColorEnum playerColor){
+    public void resignGame(ColorEnum playerColor) throws InvalidMoveException {
         game.resignGame(playerColor);
     }
     public List<Piece> getKilledPieces(){
         return game.getKilledPieces();
+    }
+
+    public void setCurrentChanceColor(ColorEnum color){
+        game.setCurrentChance(color);
     }
 }

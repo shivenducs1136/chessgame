@@ -1,4 +1,4 @@
-package io;
+package io.converters;
 
 import exceptions.PositionSizeTooShortException;
 

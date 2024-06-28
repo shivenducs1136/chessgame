@@ -1,10 +1,10 @@
-package chess;
+package com.bitiwsor.chessgame.chess;
 
-import abstracts.Piece;
-import enums.ColorEnum;
-import enums.PieceEnum;
-import io.converters.PositionToIndexConverter;
-import pieces.*;
+import com.bitiwsor.chessgame.abstracts.Piece;
+import com.bitiwsor.chessgame.enums.ColorEnum;
+import com.bitiwsor.chessgame.enums.PieceEnum;
+import com.bitiwsor.chessgame.io.converters.PositionToIndexConverter;
+import com.bitiwsor.chessgame.rules.KingRule;
 
 import java.util.ArrayList;
 import java.util.HashSet;

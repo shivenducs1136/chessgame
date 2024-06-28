@@ -1,8 +1,8 @@
-package abstracts;
+package com.bitiwsor.chessgame.abstracts;
 
-import chess.Board;
-import enums.PieceEnum;
-import io.converters.PositionToIndexConverter;
+import com.bitiwsor.chessgame.chess.Board;
+import com.bitiwsor.chessgame.enums.PieceEnum;
+import com.bitiwsor.chessgame.io.converters.PositionToIndexConverter;
 
 import java.util.ArrayList;
 import java.util.List;

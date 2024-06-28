@@ -1,11 +1,17 @@
-package chess;
+package com.bitiwsor.chessgame.chess;
 
-import abstracts.*;
-import enums.GameStateEnum;
-import enums.PieceEnum;
-import enums.ColorEnum;
-import io.converters.PositionToIndexConverter;
-import pieces.*;
+import com.bitiwsor.chessgame.abstracts.ChessCallback;
+import com.bitiwsor.chessgame.abstracts.Piece;
+import com.bitiwsor.chessgame.enums.GameStateEnum;
+import com.bitiwsor.chessgame.enums.PieceEnum;
+import com.bitiwsor.chessgame.enums.ColorEnum;
+import com.bitiwsor.chessgame.exceptions.InvalidMoveException;
+import com.bitiwsor.chessgame.exceptions.NoPieceToMoveException;
+import com.bitiwsor.chessgame.io.converters.AlgebraicNotationConverter;
+import com.bitiwsor.chessgame.io.converters.PositionToIndexConverter;
+import com.bitiwsor.chessgame.rules.CheckRule;
+import com.bitiwsor.chessgame.rules.KingRule;
+import com.bitiwsor.chessgame.rules.PawnUpgradeRule;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +43,7 @@ public class ChessGame {
      * board: A 2d list representing a chess board
      * Returns:
      * */
-    public ChessGame(ChessCallback c,List<List<Piece>> board,ColorEnum chance){
+    public ChessGame(ChessCallback c, List<List<Piece>> board, ColorEnum chance) throws InvalidMoveException {
         chessCallback = c;
         this.board = new Board(board);
         this.playerChance = chance;
@@ -51,10 +57,10 @@ public class ChessGame {
      *           j is column index starting from 0.
      * Returns: List of moves possible for current piece to move, or empty list.
      * */
-    public List<String> getExpectedMove(String position){
+    public List<String> getExpectedMove(String position) throws InvalidMoveException {
         List<String> moves = null;
         Piece currentPiece = board.getPieceAtPosition(position);
-        if(currentPiece == null) return new ArrayList<>();
+        if(currentPiece == null) throw new InvalidMoveException();
         if(playerChance == currentPiece.getPlayerColor()){
             if(currentPiece.getCanMove()){
                 moves = RuleFactory.getRule(board,currentPiece).expectedPaths().
@@ -83,7 +89,7 @@ public class ChessGame {
                 return updatedMoveList;
             }
         }
-        return new ArrayList<>();
+        throw new InvalidMoveException();
     }
     /*
      * Parameters:
@@ -91,9 +97,13 @@ public class ChessGame {
      * newPosition: The target location for the piece in standard chess notation (e.g., "00" equivalent to "h1").
      * Returns: A boolean value indicating whether the move is valid and successfully executed (true) or invalid (false).
      */
-    public boolean move(String oldPosition, String newPosition){
+    public boolean move(String oldPosition, String newPosition) throws Exception {
         Piece currentPiece = board.getPieceAtPosition(oldPosition);
         boolean isMovePerformed =  false;
+        if(currentPiece == null)
+        {
+            throw new NoPieceToMoveException("No piece is present at "+(new AlgebraicNotationConverter()).getAlgebraicNotationFromCoordinates(oldPosition));
+        }
         if(currentPiece.getPlayerColor() == playerChance){
             isMovePerformed = performMove(currentPiece,newPosition);
             if(isMovePerformed){
@@ -101,7 +111,11 @@ public class ChessGame {
                 switchChance();
                 updateGameState();
             }
+            else {
+                throw new InvalidMoveException();
+            }
         }
+        else throw new InvalidMoveException();
         return isMovePerformed;
     }
 
@@ -144,7 +158,7 @@ public class ChessGame {
      * Params:
      *   playerChance - The ColorEnum representing the player who is currently taking their turn.
      */
-    public void resignGame(ColorEnum playerChance) {
+    public void resignGame(ColorEnum playerChance) throws InvalidMoveException {
         // If the current player is Black, set the game state to WonByWhite
         if (playerChance == ColorEnum.Black) {
             currentGameState = GameStateEnum.WonByWhite;
@@ -203,7 +217,7 @@ public class ChessGame {
         }
         return null;
     }
-    private boolean performMove(Piece currentPiece, String newPosition) {
+    private boolean performMove(Piece currentPiece, String newPosition) throws InvalidMoveException {
         String oldPosition = currentPiece.getPosition();
         var moves = getExpectedMove(oldPosition);
         if(moves.contains(newPosition)){
@@ -262,7 +276,7 @@ public class ChessGame {
             rook.setPosition(converter.getIindex(kingPiece.getPosition())+"4");
         }
     }
-    private void updateGameState() {
+    private void updateGameState() throws InvalidMoveException {
         checkPiecePath = ((CheckRule)RuleFactory.getRule(board,board.getKing(playerChance), CheckRule.class)).isCheck(playerChance);
         if(checkPiecePath!=null){
             currentGameState = GameStateEnum.Check;
@@ -312,7 +326,7 @@ public class ChessGame {
         }
 
     }
-
-
-
+    public void setCurrentChance(ColorEnum color) {
+        playerChance =color;
+    }
 }
