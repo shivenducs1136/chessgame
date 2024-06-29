@@ -1,8 +1,9 @@
 package com.bitwisor.chessgametest.algebraicnotationsconverter;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
 import com.bitiwsor.chessgame.io.converters.AlgebraicNotationConverter;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
 

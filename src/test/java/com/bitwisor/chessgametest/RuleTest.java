@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -217,6 +217,102 @@ public class RuleTest  {
         assertThat(game.getKilledPieces().isEmpty(), equalTo(false));
 
     }
+
+    @Test
+    public void pointsCommonInTwoKing() throws Exception {
+
+        String[] moves = {
+                "e2", "e4", "e7", "e5", "e1", "e2", "e8", "e7",
+                "e2", "f3", "e7", "f6", "f3", "g4"
+        };
+        move(moves);
+        var list = game.getExpectedMoves("f6");
+        assertThat(game.getExpectedMoves("f6").contains("g5"),equalTo(false));
+    }
+
+    @Test
+    public void blackCheckKilled5() throws Exception{
+        String[] moves = {
+                "e2", "e3", "d7", "d5", "g1", "f3", "h7", "h5",
+                "d2", "d4", "e7", "e5", "f3", "e5", "d8", "e7",
+                "f2", "f4", "f7", "f6", "e5", "g6", "h8", "h6",
+                "g6", "e7", "f8", "e7", "f1", "b5", "c8", "d7",
+                "d1", "e2", "d7", "b5", "e2", "b5"
+        };
+        move(moves);
+        assertThat(game.getKilledPieces().size(),equalTo(5));
+    }
+
+    @Test
+    public void knightIsInWQueenBKningPath() throws Exception{
+        String[] moves = {
+                "e2", "e3", "d7", "d5", "g1", "f3", "h7", "h5",
+                "d2", "d4", "e7", "e5", "f3", "e5", "d8", "e7",
+                "f2", "f4", "f7", "f6", "e5", "g6", "h8", "h6",
+                "g6", "e7", "f8", "e7", "f1", "b5", "c8", "d7",
+                "d1", "e2", "d7", "b5", "e2", "b5", "b8", "d7",
+                "b5", "b7", "d7", "b8", "b7", "a8"
+        };
+        move(moves);
+        assertThat(game.getExpectedMoves("b8").size(),equalTo(0));
+    }
+    @Test
+    public void rookCanSaveKing() throws Exception{
+        String[] moves = {
+                "e2", "e3", "d7", "d5", "g1", "f3", "h7", "h5",
+                "d2", "d4", "e7", "e5", "f3", "e5", "d8", "e7",
+                "f2", "f4", "f7", "f6", "e5", "g6", "h8", "h6",
+                "g6", "e7", "f8", "e7", "f1", "b5", "c8", "d7",
+                "d1", "e2", "d7", "b5", "e2", "b5", "b8", "d7",
+                "b5", "b7", "d7", "b8", "b7", "a8", "e7", "d8",
+                "a8", "b8", "g8", "e7", "b8", "a7", "f6", "f5",
+                "a7", "a4"
+        };
+        move(moves);
+        assertThat(game.getExpectedMoves("h6").size(),equalTo(1));
+    }
+    @Test
+    public void saveKingPieceD8() throws Exception{
+        String[] moves = {
+                "e2", "e3", "d7", "d5", "g1", "f3", "h7", "h5",
+                "d2", "d4", "e7", "e5", "f3", "e5", "d8", "e7",
+                "f2", "f4", "f7", "f6", "e5", "g6", "h8", "h6",
+                "g6", "e7", "f8", "e7", "f1", "b5", "c8", "d7",
+                "d1", "e2", "d7", "b5", "e2", "b5", "b8", "d7",
+                "b5", "b7", "d7", "b8", "b7", "a8", "e7", "d8",
+                "a8", "b8", "g8", "e7", "b8", "a7", "f6", "f5",
+                "a7", "a4", "h6", "c6", "a4", "b5", "e7", "c8",
+                "b5", "c6", "e8", "e7", "c6", "d5", "c8", "d6",
+                "d5", "e5", "e7", "d7", "e1", "g1", "d6", "e4",
+                "e5", "f5", "d7", "e7", "f5", "e4", "e7", "d6",
+                "e4", "g6"
+        };
+        move(moves);
+        assertThat(game.getExpectedMoves("d8").contains("f6"),equalTo(true));
+    }
+    @Test
+    public void noOneLeftInBlack() throws Exception{
+        String[] moves = {
+                "e2", "e3", "d7", "d5", "g1", "f3", "h7", "h5",
+                "d2", "d4", "e7", "e5", "f3", "e5", "d8", "e7",
+                "f2", "f4", "f7", "f6", "e5", "g6", "h8", "h6",
+                "g6", "e7", "f8", "e7", "f1", "b5", "c8", "d7",
+                "d1", "e2", "d7", "b5", "e2", "b5", "b8", "d7",
+                "b5", "b7", "d7", "b8", "b7", "a8", "e7", "d8",
+                "a8", "b8", "g8", "e7", "b8", "a7", "f6", "f5",
+                "a7", "a4", "h6", "c6", "a4", "b5", "e7", "c8",
+                "b5", "c6", "e8", "e7", "c6", "d5", "c8", "d6",
+                "d5", "e5", "e7", "d7", "e1", "g1", "d6", "e4",
+                "e5", "f5", "d7", "e7", "f5", "e4", "e7", "d6",
+                "e4", "g6", "d8", "f6", "g6", "h5", "f6", "h4",
+                "h5", "h4", "g7", "g5", "h4", "g5", "c7", "c5",
+                "d4", "c5"
+        };
+        move(moves);
+        assertThat(game.getPieceFromBoard("d6").getPieceType(),equalTo(PieceEnum.King));
+        assertThat(game.getKilledPieces().size(),equalTo(17));
+    }
+
     private void move(char pos,int posNum,char destPos,int destPosNum) throws Exception {
         game.movePiece(pos+""+posNum,destPos+""+destPosNum);
     }

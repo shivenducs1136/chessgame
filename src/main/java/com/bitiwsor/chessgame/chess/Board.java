@@ -269,10 +269,12 @@ public class Board {
         Piece whiteKing = getKing(ColorEnum.White);
         Piece blackKing = getKing(ColorEnum.Black);
         KingRule whiteKingrule = (KingRule)RuleFactory.getRule(this,whiteKing);
-        KingRule blackKingRule = (KingRule)RuleFactory.getRule(this,whiteKing);
+        KingRule blackKingRule = (KingRule)RuleFactory.getRule(this,blackKing);
 
         List<String> whiteKingMoves = whiteKingrule.getAllValidMoves();
+        whiteKingMoves.add(whiteKing.getPosition());
         List<String> blackKingMoves = blackKingRule.getAllValidMoves();
+        blackKingMoves.add(blackKing.getPosition());
         Set<String> commonMoves = new HashSet<>(whiteKingMoves);
         commonMoves.retainAll(blackKingMoves);
         return new ArrayList<>(commonMoves);

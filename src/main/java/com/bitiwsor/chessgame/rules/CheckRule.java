@@ -39,6 +39,7 @@ public class CheckRule extends Rule {
                 List<String> commonPoints = board.getPointsCommonInBothKing();
                 if(commonPoints.contains(currentKingPosition)){
                     checkPiecePath.add(currentKingPosition);
+                    return checkPiecePath;
                 }
             }
             else{

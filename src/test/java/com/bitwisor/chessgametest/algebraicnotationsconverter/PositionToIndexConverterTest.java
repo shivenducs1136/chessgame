@@ -1,10 +1,11 @@
 package com.bitwisor.chessgametest.algebraicnotationsconverter;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.bitiwsor.chessgame.exceptions.PositionSizeTooShortException;
 import com.bitiwsor.chessgame.io.converters.PositionToIndexConverter;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class PositionToIndexConverterTest {
 
