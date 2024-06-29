@@ -1,4 +1,4 @@
-package com.yashasvi.algebraicnotationsconverter;
+package com.bitwisor.chessgametest.algebraicnotationsconverter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
