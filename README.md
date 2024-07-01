@@ -4,10 +4,10 @@ Welcome to the Chess Engine and Chess Library repository! This project is a comp
 engine and a chess library, designed for building, analyzing, and playing chess games.
 
 
-# **· Documentation · Report Bug · Request Feature**
+## **· Documentation · Report Bug · Request Feature**
 
 
-# **Features**: 
+## **Features**: 
 
 **_Java Chess Engine_**: Implements advanced algorithms for move generation, evaluation, and game state management.
 
@@ -20,7 +20,7 @@ _**Performance Optimizations**_: Efficient data structures and algorithms for hi
 _**Extensible Design**_: Easily extendable for custom chess variants or additional features.
 
 	
-# ⚙ **Installation**
+## ⚙ **Installation**
 
 Add this to pom.xml: 
 <dependency> 
@@ -32,7 +32,7 @@ Add this to pom.xml:
 - `mvn install`
 
 
-# 👋 **Contributing**
+## 👋 **Contributing**
 
 Contributions are what makes the open-source community such an amazing place to learn, inspire, and create.  
 Any contributions you make are greatly appreciated.
@@ -46,7 +46,7 @@ Commit your Changes (git commit -m 'Add some AmazingFeature')
 Push to the Branch (git push origin feature/AmazingFeature)      
 Open a Pull Request    
 
-# 🤝 **Contact**
+## 🤝 **Contact**
 
 Shivendu Mishra 
 shivenduaps986@gmail.com
