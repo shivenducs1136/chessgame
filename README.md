@@ -30,6 +30,3 @@ Add this to pom.xml:
 
 Shivendu Mishra 
 shivenduaps986@gmail.com
-
-
-Project Link:(https://github.com/shivenducs1136/chessgame)
