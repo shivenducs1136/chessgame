@@ -1,4 +1,4 @@
-# **Chess Engine and Chess Library**
+# **Chess Engine**
 
 Welcome to the Chess Engine and Chess Library repository! This project is a comprehensive Java-based implementation of a chess  
 engine and a chess library, designed for building, analyzing, and playing chess games.
