@@ -1,4 +1,5 @@
 package io.github.shivenducs1136.enums;
+
 public enum PieceEnum {
     King(false),
     Queen(true),

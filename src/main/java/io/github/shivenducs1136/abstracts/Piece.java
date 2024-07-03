@@ -75,14 +75,29 @@ public abstract class Piece {
     public void setIsKilled(boolean isKilled) {
         this.isKilled = isKilled;
     }
-    public void setFirstMoveToFalse(){
+    /**
+     * Sets the isFirstMove flag to false. This method is typically called
+     * after the piece has made its first move, indicating that the piece
+     * has been moved from its initial position.
+     */
+    public void setFirstMoveToFalse() {
         this.isFirstMove = false;
     }
 
+    /**
+     * Checks if this piece is making its first move.
+     *
+     * @return true if the piece has not yet moved from its initial position, false otherwise.
+     */
     public boolean isFirstMove() {
         return isFirstMove;
     }
 
+    /**
+     * Retrieves the type of the piece.
+     *
+     * @return the type of the piece as a PieceEnum.
+     */
     public PieceEnum getPieceType() {
         return this.pieceType;
     }
