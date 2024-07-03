@@ -11,28 +11,58 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+/**
+ * This class represents the chess board, managing the pieces and their positions.
+ * It maintains the current state of the board, lists of pieces for both players,
+ * and a list of killed pieces.
+ */
 public class Board {
+
+    // 2D list representing the chess board with pieces
     private List<List<Piece>> board;
+
+    // Lists to keep track of all white and black pieces on the board
     private final List<Piece> whitePieces;
     private final List<Piece> blackPieces;
-    private final List<Piece> killedPieces;
-    private final PositionToIndexConverter converter;
-    public Board(){
-        initializeNewBoard();
-        converter  = new PositionToIndexConverter();
-        whitePieces = new ArrayList<>();
-        blackPieces = new ArrayList<>();
-        killedPieces = new ArrayList<>();
-        updatePieceList();
-    }
-    public Board(List<List<Piece>> board){
-        this.board = board;
-        converter  = new PositionToIndexConverter();
-        whitePieces = new ArrayList<>();
-        blackPieces = new ArrayList<>();
-        killedPieces = new ArrayList<>();
 
-        updatePieceList();
+    // List to keep track of pieces that have been captured
+    private final List<Piece> killedPieces;
+
+    // Converter to convert board positions to indices
+    private final PositionToIndexConverter converter;
+
+    /**
+     * Default constructor to initialize a new chess board.
+     * Sets up an empty board and initializes the position to index converter.
+     * Creates empty lists for white pieces, black pieces, and killed pieces.
+     * Calls method to update the piece lists with initial board setup.
+     */
+    public Board() {
+        initializeNewBoard(); // Initialize the board with default setup
+        converter = new PositionToIndexConverter(); // Initialize the converter
+        whitePieces = new ArrayList<>(); // Initialize the list for white pieces
+        blackPieces = new ArrayList<>(); // Initialize the list for black pieces
+        killedPieces = new ArrayList<>(); // Initialize the list for killed pieces
+        updatePieceList(); // Update the piece lists based on the initial board setup
+    }
+
+    /**
+     * Constructor to initialize the board with a provided 2D list of pieces.
+     * Sets up the board with the provided configuration and initializes the
+     * position to index converter. Creates empty lists for white pieces,
+     * black pieces, and killed pieces. Calls method to update the piece lists
+     * based on the provided board setup.
+     *
+     * @param board the 2D list representing the chess board with pieces
+     */
+    public Board(List<List<Piece>> board) {
+        this.board = board; // Set the board with the provided configuration
+        converter = new PositionToIndexConverter(); // Initialize the converter
+        whitePieces = new ArrayList<>(); // Initialize the list for white pieces
+        blackPieces = new ArrayList<>(); // Initialize the list for black pieces
+        killedPieces = new ArrayList<>(); // Initialize the list for killed pieces
+        updatePieceList(); // Update the piece lists based on the provided board setup
     }
     /*
      * Parameters:

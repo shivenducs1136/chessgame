@@ -10,18 +10,64 @@ import io.github.shivenducs1136.io.converters.AlgebraicNotationConverter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents the chess engine, responsible for managing the state
+ * of the chess game, handling moves, and interacting with the game components.
+ * It uses an AlgebraicNotationConverter for move notation and a ChessGame instance
+ * to manage the game logic.
+ */
 public class ChessEngine {
+
+    // Converter to handle algebraic notation for moves
     private final AlgebraicNotationConverter converter;
+
+    // Instance of the ChessGame to manage the game state and logic
     private final ChessGame game;
 
-    public ChessEngine(ChessCallback c){
-        converter = new AlgebraicNotationConverter();
-        game = new ChessGame(c);
+    /**
+     * Constructor to initialize the chess engine with a callback for pawn promotion.
+     * Creates an algebraic notation converter and a new chess game.
+     *
+     * @param c the callback to handle pawn promotion
+     */
+    public ChessEngine(ChessCallback c) {
+        converter = new AlgebraicNotationConverter(); // Initialize the notation converter
+        game = new ChessGame(c); // Initialize the chess game with the callback
     }
+
+    /**
+     * Constructor to initialize the chess engine with a callback, a specific board configuration,
+     * and the current player's turn. Creates an algebraic notation converter and a new chess game
+     * with the provided state.
+     *
+     * @param c the callback to handle pawn promotion
+     * @param board the 2D list representing the chess board with pieces
+     * @param currentPlayerChance the color of the player whose turn it is
+     * @throws InvalidMoveException if the board configuration is invalid
+     */
     public ChessEngine(ChessCallback c, List<List<Piece>> board, ColorEnum currentPlayerChance) throws InvalidMoveException {
-        converter = new AlgebraicNotationConverter();
-        game = new ChessGame(c,board,currentPlayerChance);
+        converter = new AlgebraicNotationConverter(); // Initialize the notation converter
+        game = new ChessGame(c, board, currentPlayerChance); // Initialize the chess game with the provided state
     }
+
+    /**
+     * Retrieves the list of pieces that have been captured during the game.
+     *
+     * @return the list of killed pieces
+     */
+    public List<Piece> getKilledPieces() {
+        return game.getKilledPieces();
+    }
+
+    /**
+     * Sets the color of the player who has the current turn.
+     *
+     * @param color the color of the player to set as having the current turn
+     */
+    public void setCurrentChanceColor(ColorEnum color) {
+        game.setCurrentChance(color);
+    }
+
     /*
     * Parameters:
     * algebraicNotation: Piece location based on standard chess board algebraic notation.
@@ -112,12 +158,5 @@ public class ChessEngine {
      */
     public void resignGame(ColorEnum playerColor) throws InvalidMoveException {
         game.resignGame(playerColor);
-    }
-    public List<Piece> getKilledPieces(){
-        return game.getKilledPieces();
-    }
-
-    public void setCurrentChanceColor(ColorEnum color){
-        game.setCurrentChance(color);
     }
 }

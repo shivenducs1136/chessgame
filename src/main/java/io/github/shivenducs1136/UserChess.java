@@ -6,7 +6,7 @@ import io.github.shivenducs1136.enums.PieceEnum;
 import java.util.Scanner;
 
 /*
- * Implementation of ChessCallback interface to handle pawn upgrade selection.
+ * Default implementation of ChessCallback interface to handle pawn upgrade selection.
  */
 public class UserChess implements ChessCallback {
     /*

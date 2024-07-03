@@ -1,5 +1,6 @@
 package io.github.shivenducs1136.chess;
 
+import io.github.shivenducs1136.UserChess;
 import io.github.shivenducs1136.abstracts.ChessCallback;
 import io.github.shivenducs1136.abstracts.Piece;
 import io.github.shivenducs1136.enums.GameStateEnum;
@@ -32,7 +33,12 @@ public class ChessGame {
      * Returns:
      * */
     public ChessGame(ChessCallback c){
-        chessCallback = c;
+        if(c == null){
+            chessCallback = new UserChess();
+        }else
+        {
+            chessCallback = c;
+        }
         board = new Board();
         converter = new PositionToIndexConverter();
         setCurrentGameState(GameStateEnum.Initialized);
@@ -44,7 +50,12 @@ public class ChessGame {
      * Returns:
      * */
     public ChessGame(ChessCallback c, List<List<Piece>> board, ColorEnum chance) throws InvalidMoveException {
-        chessCallback = c;
+        if(c == null){
+            chessCallback = new UserChess();
+        }else
+        {
+            chessCallback = c;
+        }
         this.board = new Board(board);
         this.playerChance = chance;
         converter = new PositionToIndexConverter();

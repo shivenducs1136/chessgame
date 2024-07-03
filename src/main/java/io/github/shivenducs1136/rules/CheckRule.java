@@ -1,6 +1,5 @@
 package io.github.shivenducs1136.rules;
 
-import com.bitiwsor.chessgame.abstracts.*;
 import io.github.shivenducs1136.abstracts.Rule;
 import io.github.shivenducs1136.chess.Board;
 import io.github.shivenducs1136.chess.RuleFactory;
