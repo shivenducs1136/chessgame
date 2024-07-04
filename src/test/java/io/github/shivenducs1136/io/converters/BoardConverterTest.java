@@ -7,6 +7,7 @@ import io.github.shivenducs1136.enums.ColorEnum;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BoardConverterTest extends TestCase {
@@ -56,11 +57,82 @@ public class BoardConverterTest extends TestCase {
             // Test specific piece
             assertNull(board.get(0).get(0));
             assertTrue(board.get(3).get(4) instanceof ChessPiece); // q
-            assertEquals(PieceEnum.Queen, ((ChessPiece) board.get(3).get(4)).getPieceType());
-            assertEquals(ColorEnum.Black, ((ChessPiece) board.get(3).get(4)).getPlayerColor());
+            assertEquals(PieceEnum.Queen, (board.get(3).get(4)).getPieceType());
+            assertEquals(ColorEnum.Black, (board.get(3).get(4)).getPlayerColor());
+        }
+    public void testConvertBoardToString_EmptyBoard() {
+        List<List<Piece>> board = createEmptyBoard();
+        String boardString = BoardConverter.convertBoardToString(board);
+        assertEquals("........,........,........,........,........,........,........,........", boardString);
+    }
+
+
+    public void testConvertBoardToString_InitialSetup() {
+        List<List<Piece>> board = createInitialBoard();
+        String boardString = BoardConverter.convertBoardToString(board);
+        assertEquals("rnbqkbnr,pppppppp,........,........,........,........,PPPPPPPP,RNBQKBNR", boardString);
+    }
+
+
+    public void testConvertBoardToString_PartialSetup() {
+        List<List<Piece>> board = createPartialBoard();
+        String boardString = BoardConverter.convertBoardToString(board);
+        assertEquals("........,........,........,....q...,........,........,........,........", boardString);
+    }
+
+
+    private List<List<Piece>> createEmptyBoard() {
+        List<List<Piece>> board = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            List<Piece> row = new ArrayList<>();
+            for (int j = 0; j < 8; j++) {
+                row.add(null);
+            }
+            board.add(row);
+        }
+        return board;
+    }
+
+
+    private List<List<Piece>> createInitialBoard() {
+        List<List<Piece>> board = createEmptyBoard();
+
+        // Add pawns
+        for (int i = 0; i < 8; i++) {
+            board.get(1).set(i, new ChessPiece(PieceEnum.Pawn, ColorEnum.Black, "1" + i));
+            board.get(6).set(i, new ChessPiece(PieceEnum.Pawn, ColorEnum.White, "6" + i));
         }
 
+        // Add rooks
+        board.get(0).set(0, new ChessPiece(PieceEnum.Rook, ColorEnum.Black, "00"));
+        board.get(0).set(7, new ChessPiece(PieceEnum.Rook, ColorEnum.Black, "07"));
+        board.get(7).set(0, new ChessPiece(PieceEnum.Rook, ColorEnum.White, "70"));
+        board.get(7).set(7, new ChessPiece(PieceEnum.Rook, ColorEnum.White, "77"));
 
-//    public void testConvertBoardToString() {
-//    }
+        // Add King
+        board.get(0).set(4, new ChessPiece(PieceEnum.King, ColorEnum.White, "04"));
+        board.get(7).set(4, new ChessPiece(PieceEnum.King, ColorEnum.Black, "74"));
+
+        //Add Queen
+        board.get(0).set(5, new ChessPiece(PieceEnum.Queen, ColorEnum.White, "05"));
+        board.get(7).set(5, new ChessPiece(PieceEnum.Queen, ColorEnum.Black, "75"));
+
+        //Add Bishop
+        board.get(0).set(3, new ChessPiece(PieceEnum.Bishop, ColorEnum.White, "03"));
+        board.get(7).set(3, new ChessPiece(PieceEnum.Bishop, ColorEnum.Black, "73"));
+
+        //Add Knight
+        board.get(0).set(2, new ChessPiece(PieceEnum.Knight, ColorEnum.White, "02"));
+        board.get(7).set(2, new ChessPiece(PieceEnum.Knight, ColorEnum.Black, "72"));
+
+        return board;
+    }
+
+    private List<List<Piece>> createPartialBoard() {
+        List<List<Piece>> board = createEmptyBoard();
+        board.get(3).set(4, new ChessPiece(PieceEnum.Queen, ColorEnum.Black, "34"));
+        return board;
+    }
+
+
 }

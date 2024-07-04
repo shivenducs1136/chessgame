@@ -7,19 +7,28 @@ import io.github.shivenducs1136.enums.PieceEnum;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * The BoardConverter class provides methods to convert between
+ * a string representation of a chess board and a list of lists of Piece objects.
+ */
 public class BoardConverter {
 
     /*
     * Your tasks
-    *  1-> Write Unit test cases for these functions
-    *  2-> Add comments
+    *  1-> Write Unit test cases for these functions -
+    *  2-> Add comments -
     *  3-> Integrate these functions in ChessEngine class
     *  4-> Change function parameters as discussed.
     * */
-
-
-
-
+    /**
+     * Converts a string representation of a chess board to a 2D list of Piece objects.
+     *
+     * @param boardString the string representation of the board, with rows separated by commas
+     *                    and each piece represented by a single character (e.g., 'r' for black rook,
+     *                    'P' for white pawn, '.' for empty square).
+     * @return a 2D list of Piece objects representing the chess board.
+     */
     public static List<List<Piece>> convertStringToBoard(String boardString) {
 
         List<List<Piece>> newBoard = new ArrayList<>();
@@ -49,9 +58,19 @@ public class BoardConverter {
         }
         return newBoard;
     }
-    public String convertBoardToString(List<List<Piece>> board)
+    /**
+     * Converts a 2D list of Piece objects to a string representation of a chess board.
+     *
+     * @param board the 2D list of Piece objects representing the chess board.
+     * @return the string representation of the board, with rows separated by commas
+     *         and each piece represented by a single character (e.g., 'r' for black rook,
+     *         'P' for white pawn, '.' for empty square).
+     */
+    public static String convertBoardToString(List<List<Piece>> board)
     {
+
         String newBoard="";
+
         for(int i=0;i< board.size();i++)
         {
             for(int j=0;j<board.size();j++)
@@ -66,6 +85,8 @@ public class BoardConverter {
                     newBoard += ".";
                 }
             }
+            if(i< board.size()-1)
+                newBoard+=",";
         }
 
     return newBoard;
