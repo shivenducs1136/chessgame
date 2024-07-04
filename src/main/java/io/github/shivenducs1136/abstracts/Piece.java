@@ -83,7 +83,6 @@ public abstract class Piece {
     public void setFirstMoveToFalse() {
         this.isFirstMove = false;
     }
-
     /**
      * Checks if this piece is making its first move.
      *
@@ -92,7 +91,6 @@ public abstract class Piece {
     public boolean isFirstMove() {
         return isFirstMove;
     }
-
     /**
      * Retrieves the type of the piece.
      *
@@ -100,5 +98,14 @@ public abstract class Piece {
      */
     public PieceEnum getPieceType() {
         return this.pieceType;
+    }
+
+    public String toString(){
+        if(playerColor == ColorEnum.White){
+            return Character.toUpperCase(pieceType.getPieceChar)+"";
+        }
+        else{
+            return pieceType.getPieceChar+"";
+        }
     }
 }

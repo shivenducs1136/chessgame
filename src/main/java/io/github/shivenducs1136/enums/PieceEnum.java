@@ -1,15 +1,19 @@
 package io.github.shivenducs1136.enums;
 
 public enum PieceEnum {
-    King(false),
-    Queen(true),
-    Knight(true),
-    Bishop(true),
-    Rook(true),
-    Pawn(false);
+    King(false,'k'),
+    Queen(true,'q'),
+    Knight(true,'n'),
+    Bishop(true,'b'),
+    Rook(true,'r'),
+    Pawn(false,'p');
 
     public final boolean canUpgradeByPawn;
-    private PieceEnum(boolean canUpgradeByPawn){
+    public final char getPieceChar;
+
+    PieceEnum(boolean canUpgradeByPawn,char getPieceChar)
+    {
         this.canUpgradeByPawn = canUpgradeByPawn;
+        this.getPieceChar = getPieceChar;
     }
 }
