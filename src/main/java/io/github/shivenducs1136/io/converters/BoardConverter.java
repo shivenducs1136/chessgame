@@ -20,7 +20,7 @@ public class BoardConverter {
 
 
 
-    public List<List<Piece>> convertStringToBoard(String boardString) {
+    public static List<List<Piece>> convertStringToBoard(String boardString) {
 
         List<List<Piece>> newBoard = new ArrayList<>();
         List<String> newBoardString = List.of(boardString.split(","));
@@ -31,15 +31,15 @@ public class BoardConverter {
                 Piece piece = null;
                 var pieceEnums = PieceEnum.values();
 
-                for(PieceEnum p : pieceEnums){
-                    if(p.getPieceChar == currentChar){
+                for(PieceEnum piEnum : pieceEnums){
+                    if((piEnum.getPieceChar + "").equalsIgnoreCase((currentChar + ""))){
                         if(Character.isUpperCase(currentChar)){
                             // white
-                            piece = new ChessPiece(p,ColorEnum.White,i+""+j);
+                            piece = new ChessPiece(piEnum,ColorEnum.White,i+""+j);
                         }
-                        else{
+                        else if(currentChar!= '.'){
                             // black
-                            piece = new ChessPiece(p,ColorEnum.Black, i+""+j);
+                            piece = new ChessPiece(piEnum,ColorEnum.Black, i+""+j);
                         }
                     }
                 }
