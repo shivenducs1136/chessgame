@@ -110,20 +110,30 @@ public class BoardConverterTest extends TestCase {
         board.get(7).set(7, new ChessPiece(PieceEnum.Rook, ColorEnum.White, "77"));
 
         // Add King
-        board.get(0).set(4, new ChessPiece(PieceEnum.King, ColorEnum.White, "04"));
-        board.get(7).set(4, new ChessPiece(PieceEnum.King, ColorEnum.Black, "74"));
+
+        board.get(7).set(4, new ChessPiece(PieceEnum.King, ColorEnum.White, "74"));
+        board.get(0).set(4, new ChessPiece(PieceEnum.King, ColorEnum.Black, "04"));
 
         //Add Queen
-        board.get(0).set(5, new ChessPiece(PieceEnum.Queen, ColorEnum.White, "05"));
-        board.get(7).set(5, new ChessPiece(PieceEnum.Queen, ColorEnum.Black, "75"));
+
+        board.get(7).set(3, new ChessPiece(PieceEnum.Queen, ColorEnum.White, "73"));
+        board.get(0).set(3, new ChessPiece(PieceEnum.Queen, ColorEnum.Black, "04"));
 
         //Add Bishop
-        board.get(0).set(3, new ChessPiece(PieceEnum.Bishop, ColorEnum.White, "03"));
-        board.get(7).set(3, new ChessPiece(PieceEnum.Bishop, ColorEnum.Black, "73"));
+
+        board.get(7).set(2, new ChessPiece(PieceEnum.Bishop, ColorEnum.White, "72"));
+        board.get(7).set(5, new ChessPiece(PieceEnum.Bishop, ColorEnum.White, "75"));
+        board.get(0).set(2, new ChessPiece(PieceEnum.Bishop, ColorEnum.Black, "02"));
+        board.get(0).set(5, new ChessPiece(PieceEnum.Bishop, ColorEnum.Black, "05"));
+
 
         //Add Knight
-        board.get(0).set(2, new ChessPiece(PieceEnum.Knight, ColorEnum.White, "02"));
-        board.get(7).set(2, new ChessPiece(PieceEnum.Knight, ColorEnum.Black, "72"));
+
+        board.get(7).set(1, new ChessPiece(PieceEnum.Knight, ColorEnum.White, "71"));
+        board.get(7).set(6, new ChessPiece(PieceEnum.Knight, ColorEnum.White, "76"));
+        board.get(0).set(1, new ChessPiece(PieceEnum.Knight, ColorEnum.Black, "01"));
+        board.get(0).set(6, new ChessPiece(PieceEnum.Knight, ColorEnum.Black, "06"));
+
 
         return board;
     }
